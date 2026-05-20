@@ -6,6 +6,16 @@ use PHPUnit\Framework\TestCase;
 
 class DatabaseTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        Database::reset();
+    }
+
+    protected function tearDown(): void
+    {
+        Database::reset();
+    }
+
     public function test_can_get_instance(): void
     {
         $db = Database::getInstance();

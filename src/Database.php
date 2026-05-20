@@ -51,6 +51,9 @@ class Database
     public function migrate(): void
     {
         $schema = file_get_contents(__DIR__ . '/../database/schema.sql');
+        if ($schema === false) {
+            throw new \RuntimeException('Cannot read database/schema.sql');
+        }
         $this->pdo->exec($schema);
     }
 
