@@ -7,29 +7,24 @@ class Progress
 {
     public static function record(string $token, int $challengeId, bool $passed, ?int $userId): void
     {
-        $db = Database::getInstance();
-        $existing = $db->query(
-            'SELECT id, attempts FROM user_progress WHERE session_token = ? AND challenge_id = ?',
-            [$token, $challengeId]
-        )->fetch();
-
-        if ($existing) {
-            $db->query(
-                'UPDATE user_progress SET passed = ?, attempts = ?, completed_at = datetime("now"), user_id = ?
-                 WHERE session_token = ? AND challenge_id = ?',
-                [(int)$passed, $existing['attempts'] + 1, $userId, $token, $challengeId]
-            );
-        } else {
-            $db->query(
-                'INSERT INTO user_progress (user_id, session_token, challenge_id, passed, attempts)
-                 VALUES (?, ?, ?, ?, 1)',
-                [$userId, $token, $challengeId, (int)$passed]
-            );
-        }
+        Database::getInstance()->query(
+            'INSERT INTO user_progress (user_id, session_token, challenge_id, passed, attempts)
+             VALUES (?, ?, ?, ?, 1)
+             ON CONFLICT(session_token, challenge_id)
+             DO UPDATE SET
+               passed = excluded.passed,
+               attempts = attempts + 1,
+               completed_at = datetime("now"),
+               user_id = COALESCE(excluded.user_id, user_id)',
+            [$userId, $token, $challengeId, (int)$passed]
+        );
     }
 
     public static function topicScore(string $token, int $topicId, ?int $userId): int
     {
+        // Progress is always looked up by session_token (works for both guests and
+        // registered users). $userId is accepted for API symmetry but not used in
+        // the query — the session token is the authoritative key.
         $db = Database::getInstance();
         $total = (int)$db->query(
             'SELECT COUNT(*) FROM challenges WHERE topic_id = ?', [$topicId]

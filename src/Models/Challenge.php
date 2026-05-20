@@ -16,9 +16,9 @@ class Challenge
     public static function forTopic(int $topicId): array
     {
         return Database::getInstance()->query(
-            'SELECT * FROM challenges WHERE topic_id = ? ORDER BY
-             CASE difficulty WHEN "beginner" THEN 1 WHEN "intermediate" THEN 2 ELSE 3 END,
-             sort_order',
+            "SELECT * FROM challenges WHERE topic_id = ? ORDER BY
+             CASE difficulty WHEN 'beginner' THEN 1 WHEN 'intermediate' THEN 2 ELSE 3 END,
+             sort_order",
             [$topicId]
         )->fetchAll();
     }
@@ -57,9 +57,12 @@ class Challenge
      */
     public static function grade(array $challenge, string $answer): bool
     {
-        $solution = self::normalise($challenge['solution']);
-        $answer   = self::normalise($answer);
-        return $solution === $answer;
+        if ($challenge['type'] === 'write_code') {
+            // write_code: compare trimmed stdout exactly (case-sensitive)
+            return trim($challenge['solution']) === trim($answer);
+        }
+        // fill_blank and spot_bug: normalise for PHP style variations
+        return self::normalise($challenge['solution']) === self::normalise($answer);
     }
 
     private static function normalise(string $s): string

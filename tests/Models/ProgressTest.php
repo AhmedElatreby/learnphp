@@ -44,4 +44,17 @@ class ProgressTest extends TestCase
         $score = Progress::topicScore('tok', 1, null);
         $this->assertSame(100, $score);
     }
+
+    public function test_topic_score_returns_partial_percentage(): void
+    {
+        // Add second challenge to topic
+        Database::getInstance()->exec(
+            "INSERT INTO challenges (topic_id,title,prompt,type,difficulty,solution,explanation)
+             VALUES (1,'C2','Q2','fill_blank','beginner','b','e')"
+        );
+        Progress::record('tok', 1, true, null);
+        // challenge_id 2 not attempted
+        $score = Progress::topicScore('tok', 1, null);
+        $this->assertSame(50, $score);
+    }
 }

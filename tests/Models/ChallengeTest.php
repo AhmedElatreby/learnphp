@@ -50,4 +50,30 @@ class ChallengeTest extends TestCase
     {
         $this->assertTrue(Challenge::grade(['type' => 'fill_blank', 'solution' => '$i++'], '  $i++  '));
     }
+
+    public function test_grade_strips_trailing_semicolon(): void
+    {
+        $this->assertTrue(Challenge::grade(['type' => 'fill_blank', 'solution' => '$i++'], '$i++;'));
+    }
+
+    public function test_grade_normalises_quotes(): void
+    {
+        $this->assertTrue(Challenge::grade(['type' => 'fill_blank', 'solution' => "['a']"], '["a"]'));
+    }
+
+    public function test_grade_write_code_is_case_sensitive(): void
+    {
+        $this->assertFalse(Challenge::grade(['type' => 'write_code', 'solution' => 'Hello World'], 'hello world'));
+    }
+
+    public function test_for_topic_orders_beginner_before_advanced(): void
+    {
+        $db = Database::getInstance();
+        $db->exec("INSERT INTO challenges (topic_id,title,prompt,type,difficulty,solution,explanation,sort_order)
+                   VALUES (1,'Adv','Q','fill_blank','advanced','a','e',1),
+                          (1,'Beg','Q','fill_blank','beginner','a','e',2)");
+        $list = Challenge::forTopic(1);
+        $this->assertSame('beginner', $list[0]['difficulty']);
+        $this->assertSame('advanced', $list[count($list)-1]['difficulty']);
+    }
 }
