@@ -1,5 +1,5 @@
 <?php
-// Variables expected: $title (string), $content (string)
+// Variables expected: $title (string), $content (trusted HTML rendered by a controller — never pass raw user input)
 $user = \App\Auth::user();
 ?>
 <!DOCTYPE html>

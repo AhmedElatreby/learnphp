@@ -1,8 +1,8 @@
 -- Language
-INSERT INTO languages (name, slug, icon, is_active) VALUES ('PHP', 'php', '🐘', 1);
+INSERT OR IGNORE INTO languages (name, slug, icon, is_active) VALUES ('PHP', 'php', '🐘', 1);
 
 -- Topics (first 5 for initial seed — rest added incrementally)
-INSERT INTO topics (language_id, name, slug, description, sort_order) VALUES
+INSERT OR IGNORE INTO topics (language_id, name, slug, description, sort_order) VALUES
 (1, 'Variables & Data Types', 'variables', 'Learn how PHP stores data in variables and the types of values they can hold.', 1),
 (1, 'Operators', 'operators', 'Arithmetic, comparison, and logical operators in PHP.', 2),
 (1, 'Strings', 'strings', 'Working with text in PHP — string functions, interpolation, and manipulation.', 3),
@@ -10,7 +10,7 @@ INSERT INTO topics (language_id, name, slug, description, sort_order) VALUES
 (1, 'Conditionals', 'conditionals', 'if, else, elseif, and switch — controlling the flow of your program.', 5);
 
 -- Sample challenges for Arrays topic (topic_id = 4)
-INSERT INTO challenges (topic_id, title, prompt, type, difficulty, starter_code, solution, hint, explanation, is_diagnostic, sort_order) VALUES
+INSERT OR IGNORE INTO challenges (topic_id, title, prompt, type, difficulty, starter_code, solution, hint, explanation, is_diagnostic, sort_order) VALUES
 (4, 'Create an Array',
  'Fill in the blank to create an array containing the strings "apple", "banana", and "cherry".',
  'fill_blank', 'beginner',
@@ -42,7 +42,7 @@ $total = ',
  0, 3);
 
 -- Follow-up for challenge 1 (wrong answer teaching)
-INSERT INTO followup_challenges (challenge_id, prompt, type, starter_code, solution, explanation) VALUES
+INSERT OR IGNORE INTO followup_challenges (challenge_id, prompt, type, starter_code, solution, explanation) VALUES
 (1, 'Which of these correctly creates a PHP array? Fill in the correct syntax: $items = ______;',
  'fill_blank',
  '$items = ______;',
@@ -50,7 +50,7 @@ INSERT INTO followup_challenges (challenge_id, prompt, type, starter_code, solut
  'Square brackets with quoted, comma-separated strings is the correct modern PHP array syntax.');
 
 -- Tips for Arrays topic (topic_id = 4)
-INSERT INTO tips (topic_id, difficulty, title, content) VALUES
+INSERT OR IGNORE INTO tips (topic_id, difficulty, title, content) VALUES
 (4, 'all', 'Array Basics', 'Arrays store multiple values in one variable. Access items with their index starting at 0: $arr[0] is the first item.'),
 (4, 'beginner', 'Quick Reference', '$a = ["x","y","z"]; // create
 $a[0]       // "x"
@@ -59,4 +59,4 @@ $a[] = "w"; // append'),
 (4, 'beginner', 'Common Mistake', 'Arrays start at index 0, not 1. $arr[1] gives the SECOND item, not the first.');
 
 -- Section test for Arrays (uses challenge IDs 1, 2, 3)
-INSERT INTO section_tests (topic_id, challenge_id, sort_order) VALUES (4, 1, 1), (4, 2, 2), (4, 3, 3);
+INSERT OR IGNORE INTO section_tests (topic_id, challenge_id, sort_order) VALUES (4, 1, 1), (4, 2, 2), (4, 3, 3);
