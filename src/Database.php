@@ -17,6 +17,13 @@ class Database
         $this->pdo->exec('PRAGMA foreign_keys = ON');
     }
 
+    private function __clone() {}
+
+    public function __wakeup(): never
+    {
+        throw new \RuntimeException('Cannot deserialize Database singleton');
+    }
+
     public static function getInstance(): self
     {
         if (self::$instance === null) {
@@ -25,9 +32,24 @@ class Database
         return self::$instance;
     }
 
-    public function getPdo(): \PDO
+    private function getPdo(): \PDO
     {
         return $this->pdo;
+    }
+
+    public function beginTransaction(): void
+    {
+        $this->pdo->beginTransaction();
+    }
+
+    public function commit(): void
+    {
+        $this->pdo->commit();
+    }
+
+    public function rollback(): void
+    {
+        $this->pdo->rollback();
     }
 
     public function query(string $sql, array $params = []): \PDOStatement
