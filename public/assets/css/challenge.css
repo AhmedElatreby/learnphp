@@ -1,0 +1,60 @@
+.challenge-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .challenge-layout { grid-template-columns: 1fr; }
+  .challenge-tips { order: 2; }
+}
+
+.challenge-topbar {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px 8px 0 0;
+  padding: 10px 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.85rem; color: var(--muted);
+}
+
+.code-block {
+  background: #1a1a2e;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.code-input {
+  font-family: var(--font-mono) !important;
+  font-size: 0.9rem !important;
+  min-height: 120px;
+  resize: vertical;
+  white-space: pre;
+}
+
+.tip-card {
+  background: var(--bg-card);
+  border-left: 3px solid var(--primary);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 10px;
+  font-size: 0.85rem;
+}
+.tip-card h4 { color: #93c5fd; margin-bottom: 4px; font-size: 0.85rem; }
+.tip-card p  { color: var(--muted); line-height: 1.5; }
+.tip-card.tip-warning { border-left-color: var(--warning); }
+.tip-card.tip-warning h4 { color: #fcd34d; }
+
+.challenge-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+/* Mobile: make code-input readable on phone keyboards */
+@media (max-width: 768px) {
+  .code-input { font-size: 14px !important; }
+  .challenge-actions .btn { flex: 1; }
+}
