@@ -28,4 +28,13 @@ class RouterTest extends TestCase
         $result = $router->resolve('GET', '/not-found');
         $this->assertNull($result);
     }
+
+    public function test_test_route_matches_before_id_catchall(): void
+    {
+        $router = new Router();
+        $router->get('/learn/{lang}/{topic}/test', fn($lang, $topic) => "test:$lang:$topic");
+        $router->get('/learn/{lang}/{topic}/{id}', fn($lang, $topic, $id) => "challenge:$id");
+        $result = $router->resolve('GET', '/learn/php/arrays/test');
+        $this->assertSame('test:php:arrays', $result);
+    }
 }

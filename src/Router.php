@@ -32,7 +32,7 @@ class Router
     public function dispatch(): void
     {
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-        $uri    = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
+        $uri    = strtok($_SERVER['REQUEST_URI'] ?? '/', '?') ?: '/';
 
         // Register all routes
         $this->registerRoutes();
@@ -42,6 +42,7 @@ class Router
         if ($result === null) {
             http_response_code(404);
             echo '<h1>404 Not Found</h1>';
+            return;
         }
     }
 
@@ -50,6 +51,9 @@ class Router
         $this->get('/',                              [new \App\Controllers\HomeController, 'index']);
         $this->get('/learn/{lang}',                  [new \App\Controllers\TopicController, 'index']);
         $this->get('/learn/{lang}/{topic}',          [new \App\Controllers\TopicController, 'show']);
+        // Specific literal BEFORE parameterised catch-all:
+        $this->get('/learn/{lang}/{topic}/test',     [new \App\Controllers\ChallengeController, 'sectionTest']);
+        $this->post('/learn/{lang}/{topic}/test',    [new \App\Controllers\ChallengeController, 'sectionTestSubmit']);
         $this->get('/learn/{lang}/{topic}/{id}',     [new \App\Controllers\ChallengeController, 'show']);
         $this->post('/learn/{lang}/{topic}/{id}',    [new \App\Controllers\ChallengeController, 'submit']);
         $this->get('/diagnostic',                    [new \App\Controllers\DiagnosticController, 'index']);
@@ -64,7 +68,5 @@ class Router
         $this->get('/admin/challenges',              [new \App\Controllers\AdminController, 'index']);
         $this->post('/admin/challenges',             [new \App\Controllers\AdminController, 'store']);
         $this->post('/followup/{id}',                [new \App\Controllers\ChallengeController, 'submitFollowup']);
-        $this->get('/learn/{lang}/{topic}/test',     [new \App\Controllers\ChallengeController, 'sectionTest']);
-        $this->post('/learn/{lang}/{topic}/test',    [new \App\Controllers\ChallengeController, 'sectionTestSubmit']);
     }
 }
