@@ -43,4 +43,23 @@ class AuthTest extends TestCase
         $user = Auth::attempt('carol@example.com', 'wrongpass');
         $this->assertNull($user);
     }
+
+    public function test_claim_guest_progress_links_token_to_user(): void
+    {
+        // Set up: a challenge to link progress to
+        $db = Database::getInstance();
+        $db->query('INSERT INTO topics (language_id,name,slug,description,sort_order) VALUES (1,"Arrays","arrays","",1)');
+        $db->query('INSERT INTO challenges (topic_id,title,prompt,type,difficulty,solution,explanation) VALUES (1,"C","Q","fill_blank","beginner","a","e")');
+
+        // Create guest progress row
+        $db->query('INSERT INTO user_progress (session_token,challenge_id,passed,attempts) VALUES ("guesttoken123",1,1,1)');
+
+        // Register user and claim progress
+        $userId = Auth::register('dave', 'dave@example.com', 'pass123');
+        Auth::claimGuestProgress('guesttoken123', $userId);
+
+        // Verify progress row now has user_id
+        $row = $db->query('SELECT user_id FROM user_progress WHERE session_token = ?', ['guesttoken123'])->fetch();
+        $this->assertSame($userId, (int)$row['user_id']);
+    }
 }

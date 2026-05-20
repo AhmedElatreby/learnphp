@@ -22,11 +22,12 @@ class Auth
     public static function attempt(string $email, string $password): ?array
     {
         $db   = Database::getInstance();
-        $user = $db->query('SELECT * FROM users WHERE email = ?', [$email])->fetch();
-        if (!$user || !password_verify($password, $user['password_hash'])) {
+        $row  = $db->query('SELECT * FROM users WHERE email = ?', [$email])->fetch();
+        if (!$row || !password_verify($password, $row['password_hash'])) {
             return null;
         }
-        return $user;
+        // Return only safe fields — never expose password_hash to callers
+        return ['id' => $row['id'], 'username' => $row['username'], 'email' => $row['email']];
     }
 
     public static function user(): ?array
@@ -38,12 +39,14 @@ class Auth
     public static function login(array $user): void
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
+        session_regenerate_id(true);
         $_SESSION['user'] = ['id' => $user['id'], 'username' => $user['username']];
     }
 
     public static function logout(): void
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
+        $_SESSION = [];
         session_destroy();
     }
 
