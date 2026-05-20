@@ -1,0 +1,6 @@
+vendor/
+database/app.sqlite
+.env
+.superpowers/
+composer.phar
+composer-setup.php
