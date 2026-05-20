@@ -10,9 +10,9 @@
         <p style="color:var(--muted);font-size:0.82rem;margin-bottom:10px"><?= htmlspecialchars($t['description']) ?></p>
         <?php if ($t['score'] > 0): ?>
         <div class="progress-bar">
-          <div class="progress-bar__fill" style="width:<?= $t['score'] ?>%"></div>
+          <div class="progress-bar__fill" style="width:<?= (int)$t['score'] ?>%"></div>
         </div>
-        <div style="color:var(--muted);font-size:0.75rem;margin-top:4px"><?= $t['score'] ?>% complete</div>
+        <div style="color:var(--muted);font-size:0.75rem;margin-top:4px"><?= (int)$t['score'] ?>% complete</div>
         <?php endif; ?>
       </div>
     </a>

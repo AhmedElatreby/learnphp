@@ -8,7 +8,7 @@
   <div style="display:flex;flex-direction:column;gap:10px">
     <?php foreach ($challenges as $c): ?>
     <?php $done = in_array($c['id'], $completed); ?>
-    <a href="/learn/php/<?= htmlspecialchars($topic['slug']) ?>/<?= $c['id'] ?>" style="text-decoration:none">
+    <a href="/learn/php/<?= htmlspecialchars($topic['slug']) ?>/<?= (int)$c['id'] ?>" style="text-decoration:none">
       <div class="card" style="display:flex;align-items:center;gap:16px;cursor:pointer">
         <div style="font-size:1.2rem"><?= $done ? '✅' : '○' ?></div>
         <div style="flex:1">
