@@ -22,6 +22,13 @@ if (file_exists($envFile)) {
 $db = \App\Database::getInstance();
 echo "Running schema...\n";
 $db->migrate();
-echo "Running seed...\n";
-$db->exec(file_get_contents(__DIR__ . '/../database/seed.sql'));
-echo "Done! Database ready at: " . ($_ENV['DB_PATH'] ?? 'database/app.sqlite') . "\n";
+
+// Only seed if the database is empty (safe to re-run)
+$count = (int) $db->query('SELECT COUNT(*) FROM languages')->fetchColumn();
+if ($count === 0) {
+    echo "Running seed...\n";
+    $db->exec(file_get_contents(__DIR__ . '/../database/seed.sql'));
+    echo "Done! Database ready at: " . ($_ENV['DB_PATH'] ?? 'database/app.sqlite') . "\n";
+} else {
+    echo "Database already seeded — skipping. Delete database/app.sqlite to reseed.\n";
+}
