@@ -1,5 +1,6 @@
 vendor/
-database/app.sqlite
+database/*.sqlite
+.claude/settings.local.json
 .env
 .superpowers/
 composer.phar
