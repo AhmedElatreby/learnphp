@@ -66,7 +66,11 @@ class Router
         $this->post('/register',                     [new \App\Controllers\AuthController, 'register']);
         $this->get('/logout',                        [new \App\Controllers\AuthController, 'logout']);
         $this->get('/admin/challenges',              [new \App\Controllers\AdminController, 'index']);
+        $this->get('/admin/challenges/new',          [new \App\Controllers\AdminController, 'create']);
         $this->post('/admin/challenges',             [new \App\Controllers\AdminController, 'store']);
+        $this->get('/admin/challenges/{id}/edit',    [new \App\Controllers\AdminController, 'edit']);
+        $this->post('/admin/challenges/{id}',        [new \App\Controllers\AdminController, 'update']);
+        $this->post('/admin/challenges/{id}/delete', [new \App\Controllers\AdminController, 'destroy']);
         $this->post('/followup/{id}',                [new \App\Controllers\ChallengeController, 'submitFollowup']);
     }
 }
