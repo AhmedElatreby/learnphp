@@ -29,8 +29,8 @@
           <div class="form-group">
             <label>Your answer:</label>
             <?php if ($challenge['type'] === 'write_code'): ?>
-            <textarea name="answer" class="code-input" placeholder="Write your PHP code here..."
-                      rows="6"></textarea>
+            <div id="cm-editor" data-starter="<?= htmlspecialchars($challenge['starter_code']) ?>" data-lang="php"></div>
+            <input type="hidden" name="answer" id="cm-answer">
             <?php else: ?>
             <input type="text" name="answer" placeholder="Type your answer..." autocomplete="off">
             <?php endif; ?>
@@ -55,11 +55,12 @@
       <div id="feedback"></div>
 
       <?php if ($challenge['type'] === 'write_code'): ?>
-      <div id="runner-output" style="display:none" class="card" style="margin-top:12px">
+      <div id="runner-output" style="display:none;margin-top:12px" class="card">
         <div style="color:var(--muted);font-size:0.8rem;margin-bottom:6px">Output:</div>
         <pre id="runner-pre" style="margin:0"></pre>
       </div>
       <script src="/assets/js/runner.js" defer></script>
+      <script type="module" src="/assets/js/editor.js"></script>
       <?php endif; ?>
     </div>
 
