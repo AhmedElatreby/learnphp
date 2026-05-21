@@ -34,16 +34,24 @@ class Router
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         $uri    = strtok($_SERVER['REQUEST_URI'] ?? '/', '?') ?: '/';
 
-        // Register all routes
         $this->registerRoutes();
 
-        $result = $this->resolve($method, $uri);
-
-        if ($result === null) {
-            http_response_code(404);
-            echo '<h1>404 Not Found</h1>';
-            return;
+        // Cannot use resolve() return value to detect a match — real controllers
+        // return void (null), which is identical to "no route found". Match the
+        // route first, then invoke the handler only if found.
+        $routes = $this->routes[$method] ?? [];
+        foreach ($routes as $pattern => $handler) {
+            $regex = preg_replace('/\{(\w+)\}/', '(?P<$1>[^/]+)', $pattern);
+            $regex = '#^' . $regex . '$#';
+            if (preg_match($regex, $uri, $matches)) {
+                $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+                $handler(...array_values($params));
+                return; // route matched and handled — never reach 404 block
+            }
         }
+
+        http_response_code(404);
+        echo '<h1>404 Not Found</h1>';
     }
 
     private function registerRoutes(): void
