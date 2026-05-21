@@ -50,6 +50,19 @@ class Auth
         session_destroy();
     }
 
+    /**
+     * Guard: throws RuntimeException if the current session user is not an admin.
+     * Controllers catch this and return 403. Using an exception (not exit) keeps it testable.
+     */
+    public static function requireAdmin(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        $user = $_SESSION['user'] ?? null;
+        if (!$user || empty($user['is_admin'])) {
+            throw new \RuntimeException('Forbidden', 403);
+        }
+    }
+
     public static function sessionToken(): string
     {
         if (session_status() === PHP_SESSION_NONE) session_start();

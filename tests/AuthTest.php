@@ -62,4 +62,29 @@ class AuthTest extends TestCase
         $row = $db->query('SELECT user_id FROM user_progress WHERE session_token = ?', ['guesttoken123'])->fetch();
         $this->assertSame($userId, (int)$row['user_id']);
     }
+
+    public function test_require_admin_passes_for_admin_user(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        $_SESSION['user'] = ['id' => 1, 'username' => 'admin', 'is_admin' => 1];
+        // Should not throw — just return normally
+        $this->expectNotToPerformAssertions();
+        Auth::requireAdmin();
+    }
+
+    public function test_require_admin_raises_for_non_admin(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        $_SESSION['user'] = ['id' => 2, 'username' => 'user', 'is_admin' => 0];
+        $this->expectException(\RuntimeException::class);
+        Auth::requireAdmin();
+    }
+
+    public function test_require_admin_raises_for_guest(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        unset($_SESSION['user']);
+        $this->expectException(\RuntimeException::class);
+        Auth::requireAdmin();
+    }
 }
