@@ -76,4 +76,48 @@ class ChallengeTest extends TestCase
         $this->assertSame('beginner', $list[0]['difficulty']);
         $this->assertSame('advanced', $list[count($list)-1]['difficulty']);
     }
+
+    public function test_all_returns_challenges_with_topic_and_language(): void
+    {
+        $db = Database::getInstance();
+        $db->exec("INSERT INTO challenges (topic_id,title,prompt,type,difficulty,solution,explanation)
+                   VALUES (1,'My Challenge','Q?','fill_blank','beginner','a','e')");
+        $all = Challenge::all();
+        $this->assertNotEmpty($all);
+        $this->assertArrayHasKey('topic_name', $all[0]);
+        $this->assertArrayHasKey('language_name', $all[0]);
+        $this->assertSame('Arrays', $all[0]['topic_name']);
+        $this->assertSame('PHP', $all[0]['language_name']);
+    }
+
+    public function test_update_persists_changes(): void
+    {
+        $db = Database::getInstance();
+        $db->exec("INSERT INTO challenges (topic_id,title,prompt,type,difficulty,solution,explanation)
+                   VALUES (1,'Old Title','Q?','fill_blank','beginner','a','e')");
+        $id = (int)$db->lastInsertId();
+        Challenge::update($id, [
+            'title' => 'New Title', 'prompt' => 'Q?', 'type' => 'fill_blank',
+            'difficulty' => 'intermediate', 'solution' => 'a', 'explanation' => 'e',
+            'topic_id' => 1, 'starter_code' => '', 'hint' => '',
+            'is_diagnostic' => 0, 'sort_order' => 0,
+        ]);
+        $c = Challenge::find($id);
+        $this->assertSame('New Title', $c['title']);
+        $this->assertSame('intermediate', $c['difficulty']);
+    }
+
+    public function test_delete_removes_challenge_and_followups(): void
+    {
+        $db = Database::getInstance();
+        $db->exec("INSERT INTO challenges (topic_id,title,prompt,type,difficulty,solution,explanation)
+                   VALUES (1,'Del Me','Q?','fill_blank','beginner','a','e')");
+        $id = (int)$db->lastInsertId();
+        $db->exec("INSERT INTO followup_challenges (challenge_id,prompt,type,solution,explanation)
+                   VALUES ({$id},'FQ?','fill_blank','a','e')");
+        Challenge::delete($id);
+        $this->assertNull(Challenge::find($id));
+        $fu = $db->query('SELECT * FROM followup_challenges WHERE challenge_id = ?', [$id])->fetchAll();
+        $this->assertEmpty($fu);
+    }
 }

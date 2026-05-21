@@ -73,4 +73,42 @@ class Challenge
         $s = strtolower($s);
         return $s;
     }
+
+    public static function all(): array
+    {
+        return Database::getInstance()->query(
+            'SELECT c.*, t.name AS topic_name, l.name AS language_name
+             FROM challenges c
+             JOIN topics t ON t.id = c.topic_id
+             JOIN languages l ON l.id = t.language_id
+             ORDER BY l.name, t.sort_order, c.sort_order, c.id'
+        )->fetchAll();
+    }
+
+    public static function update(int $id, array $data): void
+    {
+        Database::getInstance()->query(
+            'UPDATE challenges SET
+                topic_id=?, title=?, prompt=?, type=?, difficulty=?,
+                starter_code=?, solution=?, hint=?, explanation=?,
+                is_diagnostic=?, sort_order=?
+             WHERE id=?',
+            [
+                (int)$data['topic_id'], $data['title'], $data['prompt'],
+                $data['type'], $data['difficulty'], $data['starter_code'] ?? '',
+                $data['solution'], $data['hint'] ?? '', $data['explanation'],
+                (int)($data['is_diagnostic'] ?? 0), (int)($data['sort_order'] ?? 0),
+                $id,
+            ]
+        );
+    }
+
+    public static function delete(int $id): void
+    {
+        $db = Database::getInstance();
+        $db->query('DELETE FROM followup_challenges WHERE challenge_id = ?', [$id]);
+        $db->query('DELETE FROM section_tests WHERE challenge_id = ?', [$id]);
+        $db->query('DELETE FROM user_progress WHERE challenge_id = ?', [$id]);
+        $db->query('DELETE FROM challenges WHERE id = ?', [$id]);
+    }
 }
