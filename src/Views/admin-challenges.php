@@ -43,6 +43,7 @@
             <td style="padding:8px 12px;border-bottom:1px solid #1e293b;white-space:nowrap">
               <a href="/admin/challenges/<?= (int)$c['id'] ?>/edit" class="btn btn-ghost" style="padding:4px 10px;font-size:0.8rem;min-height:30px">Edit</a>
               <form method="POST" action="/admin/challenges/<?= (int)$c['id'] ?>/delete" style="display:inline" onsubmit="return confirm('Delete this challenge?')">
+                <input type="hidden" name="_token" value="<?= htmlspecialchars(\App\Auth::csrfToken()) ?>">
                 <button type="submit" class="btn btn-danger" style="padding:4px 10px;font-size:0.8rem;min-height:30px">Delete</button>
               </form>
             </td>

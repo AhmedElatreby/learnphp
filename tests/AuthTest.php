@@ -15,6 +15,13 @@ class AuthTest extends TestCase
         Database::getInstance()->exec(
             "INSERT INTO languages (name,slug,icon,is_active) VALUES ('PHP','php','🐘',1)"
         );
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        $_SESSION = [];
+    }
+
+    protected function tearDown(): void
+    {
+        $_SESSION = [];
     }
 
     public function test_generates_guest_token(): void

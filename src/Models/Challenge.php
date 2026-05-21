@@ -106,9 +106,16 @@ class Challenge
     public static function delete(int $id): void
     {
         $db = Database::getInstance();
-        $db->query('DELETE FROM followup_challenges WHERE challenge_id = ?', [$id]);
-        $db->query('DELETE FROM section_tests WHERE challenge_id = ?', [$id]);
-        $db->query('DELETE FROM user_progress WHERE challenge_id = ?', [$id]);
-        $db->query('DELETE FROM challenges WHERE id = ?', [$id]);
+        $db->beginTransaction();
+        try {
+            $db->query('DELETE FROM followup_challenges WHERE challenge_id = ?', [$id]);
+            $db->query('DELETE FROM section_tests WHERE challenge_id = ?', [$id]);
+            $db->query('DELETE FROM user_progress WHERE challenge_id = ?', [$id]);
+            $db->query('DELETE FROM challenges WHERE id = ?', [$id]);
+            $db->commit();
+        } catch (\Throwable $e) {
+            $db->rollback();
+            throw $e;
+        }
     }
 }

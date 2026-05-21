@@ -20,6 +20,7 @@ $v = fn(string $k, mixed $def = '') => htmlspecialchars((string)($old[$k] ?? $de
   <?php endif; ?>
 
   <form method="POST" action="<?= $action ?>">
+    <input type="hidden" name="_token" value="<?= htmlspecialchars(\App\Auth::csrfToken()) ?>">
     <div class="card">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
         <div class="form-group">
@@ -27,17 +28,18 @@ $v = fn(string $k, mixed $def = '') => htmlspecialchars((string)($old[$k] ?? $de
           <select name="topic_id">
             <?php
             $currentLang = '';
+            $groupOpen   = false;
             foreach ($topics as $t):
               if ($t['language_name'] !== $currentLang):
-                if ($currentLang !== '') echo '</optgroup>';
+                if ($groupOpen) echo '</optgroup>';
                 $currentLang = $t['language_name'];
+                $groupOpen   = true;
                 echo '<optgroup label="' . htmlspecialchars($currentLang) . '">';
               endif;
               $sel = ((string)($old['topic_id'] ?? '') === (string)$t['id']) ? 'selected' : '';
             ?>
             <option value="<?= (int)$t['id'] ?>" <?= $sel ?>><?= htmlspecialchars($t['name']) ?></option>
-            <?php endforeach; ?>
-            </optgroup>
+            <?php endforeach; if ($groupOpen): ?></optgroup><?php endif; ?>
           </select>
         </div>
         <div class="form-group">

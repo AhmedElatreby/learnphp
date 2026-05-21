@@ -72,6 +72,30 @@ class Auth
         return $_SESSION['guest_token'];
     }
 
+    /** Return (and lazily create) a per-session CSRF token */
+    public static function csrfToken(): string
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf_token'];
+    }
+
+    /**
+     * Verify the submitted _token matches the session CSRF token.
+     * Throws RuntimeException(419) on mismatch — callers should respond with 419.
+     */
+    public static function verifyCsrf(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        $submitted = $_POST['_token'] ?? '';
+        $expected  = $_SESSION['csrf_token'] ?? '';
+        if (!$expected || !hash_equals($expected, $submitted)) {
+            throw new \RuntimeException('CSRF token mismatch', 419);
+        }
+    }
+
     /** After register/login: link guest progress to the new user account */
     public static function claimGuestProgress(string $token, int $userId): void
     {

@@ -42,6 +42,7 @@ class AdminController
     public function store(): void
     {
         $this->guard();
+        $this->csrf();
         $data   = $this->inputFromPost();
         $errors = $this->validate($data);
 
@@ -87,6 +88,7 @@ class AdminController
     public function update(string $id): void
     {
         $this->guard();
+        $this->csrf();
         $challenge = Challenge::find((int)$id);
         if (!$challenge) { http_response_code(404); return; }
 
@@ -109,6 +111,7 @@ class AdminController
     public function destroy(string $id): void
     {
         $this->guard();
+        $this->csrf();
         Challenge::delete((int)$id);
         $this->flashSuccess('Challenge deleted.');
         header('Location: /admin/challenges');
@@ -124,6 +127,17 @@ class AdminController
         } catch (\RuntimeException $e) {
             http_response_code(403);
             echo '<h1>403 Forbidden</h1>';
+            exit;
+        }
+    }
+
+    private function csrf(): void
+    {
+        try {
+            Auth::verifyCsrf();
+        } catch (\RuntimeException $e) {
+            http_response_code(419);
+            echo '<h1>419 Invalid Token</h1>';
             exit;
         }
     }
