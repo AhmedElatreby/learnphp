@@ -23,6 +23,14 @@ $db = \App\Database::getInstance();
 echo "Running schema...\n";
 $db->migrate();
 
+// Safe migration: add is_admin if the column doesn't exist yet
+try {
+    $db->exec("ALTER TABLE users ADD COLUMN is_admin INTEGER NOT NULL DEFAULT 0");
+    echo "Migration: added is_admin column.\n";
+} catch (\PDOException) {
+    // Column already exists — fine
+}
+
 // Only seed if the database is empty (safe to re-run)
 $count = (int) $db->query('SELECT COUNT(*) FROM languages')->fetchColumn();
 if ($count === 0) {
