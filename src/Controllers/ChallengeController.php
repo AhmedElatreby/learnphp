@@ -15,12 +15,21 @@ class ChallengeController
         $challenge = Challenge::find((int)$id);
         if (!$topic || !$challenge) { http_response_code(404); echo '404'; return; }
 
-        $tips      = Tip::forTopic($topic['id'], $challenge['difficulty']);
-        $token     = Auth::sessionToken();
-        $completed = Progress::completedIds($token);
+        $tips        = Tip::forTopic($topic['id'], $challenge['difficulty']);
+        $token       = Auth::sessionToken();
+        $completed   = Progress::completedIds($token);
         $allForTopic = Challenge::forTopic($topic['id']);
-        $position  = array_search($challenge['id'], array_column($allForTopic, 'id')) + 1;
-        $total     = count($allForTopic);
+        $position    = array_search($challenge['id'], array_column($allForTopic, 'id')) + 1;
+        $total       = count($allForTopic);
+
+        // Progression gate: challenge N requires challenge N-1 to be passed
+        if ($position > 1) {
+            $prevId = $allForTopic[$position - 2]['id'];
+            if (!in_array($prevId, $completed)) {
+                header('Location: /learn/' . $lang . '/' . $topicSlug);
+                exit;
+            }
+        }
 
         $title = $challenge['title'];
         ob_start();
