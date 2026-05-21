@@ -40,6 +40,7 @@ class Auth
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
         session_regenerate_id(true);
+        unset($_SESSION['csrf_token']); // rotate CSRF token on privilege escalation
         $_SESSION['user'] = ['id' => $user['id'], 'username' => $user['username']];
     }
 

@@ -22,6 +22,9 @@ class AuthTest extends TestCase
     protected function tearDown(): void
     {
         $_SESSION = [];
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
+        }
     }
 
     public function test_generates_guest_token(): void
