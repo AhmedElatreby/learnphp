@@ -626,3 +626,209 @@ INSERT OR IGNORE INTO followup_challenges (challenge_id,prompt,type,solution,exp
  'fill_blank','>=',
  '>= means "greater than or equal to". $score >= 50 is true when score is 50 or above.');
 
+-- ═══════════════════════════════════════════════
+-- Remediation Challenges (4 per topic)
+-- ═══════════════════════════════════════════════
+
+-- Variables & Data Types (topic_id = 1)
+INSERT OR IGNORE INTO remediation_challenges (id,topic_id,weakness_tag,prompt,type,starter_code,solution,explanation) VALUES
+(1,1,'types',
+ 'Fill in the blank — which function returns the type of a variable as a string?',
+ 'fill_blank',
+ '$x = 42;
+echo ______($x); // "integer"',
+ 'gettype',
+ 'gettype() returns a string describing the variable''s type: "integer", "double", "string", "boolean", "array", or "NULL".'),
+
+(2,1,'casting',
+ 'Fill in the blank — cast the string $s to an integer.',
+ 'fill_blank',
+ '$s = "7";
+$n = ______;',
+ '(int)$s',
+ '(int)$variable casts to integer. intval($variable) also works. Form data always arrives as strings, so casting is essential.'),
+
+(3,1,'comparison',
+ 'Spot the bug — this should only print "match" when $val is exactly the integer 0, not other falsy values.',
+ 'spot_bug',
+ '$val = 0;
+if ($val == false) {
+    echo "match";
+}',
+ 'if ($val === false) {',
+ '== (loose) treats 0 and false as equal. === (strict) checks value AND type — 0 === false is false. Always prefer === to avoid type-coercion surprises.'),
+
+(4,1,'constants',
+ 'Fill in the blank — define a constant named APP_VERSION with value "1.0".',
+ 'fill_blank',
+ '______;',
+ 'define(''APP_VERSION'', ''1.0'')',
+ 'define(''NAME'', value) creates a global constant. Constants have no $ prefix and cannot be reassigned. Use const NAME = value inside class scope.');
+
+-- Operators (topic_id = 2)
+INSERT OR IGNORE INTO remediation_challenges (id,topic_id,weakness_tag,prompt,type,starter_code,solution,explanation) VALUES
+(5,2,'modulo',
+ 'Fill in the blank — what does 17 % 5 evaluate to?',
+ 'fill_blank',
+ '$result = 17 % 5;
+echo $result; // ______',
+ '2',
+ '17 divided by 5 is 3 remainder 2. The modulo operator % returns that remainder. Use n % 2 === 0 to test if a number is even.'),
+
+(6,2,'concatenation',
+ 'Spot the bug — this should print "Hello World" but prints "0" instead.',
+ 'spot_bug',
+ '$a = "Hello";
+$b = "World";
+echo $a + " " + $b;',
+ 'echo $a . " " . $b;',
+ 'PHP uses . (dot) for string concatenation, not + (plus). The + operator tries to add numerically — "Hello" becomes 0, so the result is 0.'),
+
+(7,2,'ternary',
+ 'Fill in the blank — use the ternary operator to set $msg to "yes" if $ok is true, otherwise "no".',
+ 'fill_blank',
+ '$ok = true;
+$msg = ______;',
+ '$ok ? "yes" : "no"',
+ 'The ternary operator: condition ? value_if_true : value_if_false. It is a one-line if/else that returns a value.'),
+
+(8,2,'strict',
+ 'Fill in the blank — use strict equality to compare $a and $b.',
+ 'fill_blank',
+ '$a = "5";
+$b = 5;
+var_dump($a ______ $b); // bool(false)',
+ '===',
+ '=== checks both value AND type. "5" === 5 is false because one is a string and one an integer. == would return true due to type coercion.');
+
+-- Strings (topic_id = 3)
+INSERT OR IGNORE INTO remediation_challenges (id,topic_id,weakness_tag,prompt,type,starter_code,solution,explanation) VALUES
+(9,3,'length',
+ 'Fill in the blank — get the number of characters in $word.',
+ 'fill_blank',
+ '$word = "elephant";
+echo ______($word); // 8',
+ 'strlen',
+ 'strlen() counts bytes (same as characters for ASCII/Latin text). For emoji or accented characters in UTF-8, use mb_strlen() instead.'),
+
+(10,3,'interpolation',
+ 'Spot the bug — this should print "Hello Ahmed" but prints "Hello $name" literally.',
+ 'spot_bug',
+ '$name = "Ahmed";
+echo ''Hello $name'';',
+ 'echo "Hello $name";',
+ 'Single-quoted strings are literal — $variables are NOT interpolated. Use double quotes: "Hello $name" to embed variables directly in strings.'),
+
+(11,3,'strpos',
+ 'Spot the bug — this should print "found" when "PHP" appears at the start of $str, but it prints "not found".',
+ 'spot_bug',
+ '$str = "PHP is great";
+if (strpos($str, "PHP")) {
+    echo "found";
+} else {
+    echo "not found";
+}',
+ 'if (strpos($str, "PHP") !== false) {',
+ 'strpos() returns the position (0 for the start), or false if not found. Position 0 is falsy, so bare if (strpos(...)) misses matches at the start. Always use !== false.'),
+
+(12,3,'replace',
+ 'Fill in the blank — replace every "dog" with "cat" in $sentence.',
+ 'fill_blank',
+ '$sentence = "I love my dog. My dog is great.";
+echo ______("dog", "cat", $sentence);',
+ 'str_replace',
+ 'str_replace($search, $replace, $subject) replaces all occurrences of $search with $replace in $subject. It is case-sensitive. Use str_ireplace() for case-insensitive replacement.');
+
+-- Arrays (topic_id = 4)
+INSERT OR IGNORE INTO remediation_challenges (id,topic_id,weakness_tag,prompt,type,starter_code,solution,explanation) VALUES
+(13,4,'access',
+ 'Fill in the blank — access the second element of $colors.',
+ 'fill_blank',
+ '$colors = ["red", "green", "blue"];
+echo ______; // "green"',
+ '$colors[1]',
+ 'Arrays are zero-indexed: $colors[0] is "red", $colors[1] is "green", $colors[2] is "blue". The second element is always at index 1.'),
+
+(14,4,'count',
+ 'Fill in the blank — store the number of items in $fruits into $total.',
+ 'fill_blank',
+ '$fruits = ["apple", "banana", "cherry", "date"];
+$total = ______;',
+ 'count($fruits)',
+ 'count() returns the number of elements in an array. It is the standard PHP way to get array length — not sizeof() or length().'),
+
+(15,4,'associative',
+ 'Spot the bug — this should print "Ahmed" but gives an error.',
+ 'spot_bug',
+ '$user = ["name" => "Ahmed", "age" => 30];
+echo $user[0];',
+ 'echo $user["name"];',
+ 'Associative arrays use string keys, not numeric indexes. $user[0] does not exist — use $user["name"] to access the "name" key.'),
+
+(16,4,'foreach',
+ 'Fill in the blank — loop through $numbers and echo each one followed by a newline.',
+ 'fill_blank',
+ '$numbers = [1, 2, 3, 4, 5];
+foreach ($numbers as ______) {
+    echo $n . "\n";
+}',
+ '$n',
+ 'foreach ($array as $item) iterates over each element. The variable after "as" ($n here) holds the current item. For key-value access use: foreach ($arr as $key => $value).');
+
+-- Conditionals (topic_id = 5)
+INSERT OR IGNORE INTO remediation_challenges (id,topic_id,weakness_tag,prompt,type,starter_code,solution,explanation) VALUES
+(17,5,'if-else',
+ 'Fill in the blank — complete the condition so $grade is "pass" when $score is 50 or above.',
+ 'fill_blank',
+ '$score = 65;
+if (______) {
+    $grade = "pass";
+} else {
+    $grade = "fail";
+}',
+ '$score >= 50',
+ '>= means "greater than or equal to". $score >= 50 is true for scores of 50, 60, 100 — anything at or above 50.'),
+
+(18,5,'switch',
+ 'Spot the bug — when $day is "Monday", this prints "Monday" AND "Tuesday".',
+ 'spot_bug',
+ '$day = "Monday";
+switch ($day) {
+    case "Monday":
+        echo "Monday";
+    case "Tuesday":
+        echo "Tuesday";
+        break;
+}',
+ 'case "Monday":
+        echo "Monday";
+        break;',
+ 'Without break, switch falls through to the next case. After printing "Monday" it continues into the "Tuesday" case. Add break after each case body to stop execution.'),
+
+(19,5,'match',
+ 'Fill in the blank — use PHP 8 match to map $code to a label.',
+ 'fill_blank',
+ '$code = 200;
+$label = ______ ($code) {
+    200 => "OK",
+    404 => "Not Found",
+    500 => "Server Error",
+    default => "Unknown",
+};',
+ 'match',
+ 'match (PHP 8+) is like switch but returns a value, uses strict === comparison, and throws UnhandledMatchError if no arm matches without a default.'),
+
+(20,5,'elseif',
+ 'Fill in the blank — add an elseif to check if $score is between 60 and 79.',
+ 'fill_blank',
+ '$score = 70;
+if ($score >= 80) {
+    echo "A";
+} ______ ($score >= 60) {
+    echo "B";
+} else {
+    echo "C";
+}',
+ 'elseif',
+ 'elseif (one word) adds another condition branch. Both elseif and else if work in PHP, but elseif is the standard convention. The conditions are checked in order — first true branch runs.');
+
