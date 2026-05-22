@@ -47,13 +47,18 @@
   <div class="card" style="margin-bottom:20px">
     <h3 style="margin-bottom:14px">📋 Your Recommended Learning Plan</h3>
     <?php foreach ($plan as $i => $r): ?>
-    <a href="/learn/php/<?= htmlspecialchars($r['topic']['slug']) ?>" style="text-decoration:none">
-      <div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--bg);border-radius:6px;margin-bottom:8px;border-left:3px solid <?= $colors[$r['status']] ?>">
-        <span style="color:var(--muted);font-size:0.85rem;min-width:20px"><?= (int)($i+1) ?></span>
-        <span style="flex:1;color:var(--text);font-size:0.9rem"><?= htmlspecialchars($r['topic']['name']) ?></span>
-        <span style="color:<?= $colors[$r['status']] ?>;font-size:0.8rem"><?= $r['status'] === 'weak' ? 'Priority' : 'Review' ?></span>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+      <div style="flex:1;display:flex;align-items:center;gap:12px;padding:10px;background:var(--bg);border-radius:6px;border-left:3px solid <?= $colors[$r['status']] ?>;min-width:0">
+        <span style="color:var(--muted);font-size:0.85rem;flex-shrink:0"><?= (int)($i+1) ?></span>
+        <span style="flex:1;color:var(--text);font-size:0.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><?= htmlspecialchars($r['topic']['name']) ?></span>
+        <span style="color:<?= $colors[$r['status']] ?>;font-size:0.8rem;flex-shrink:0"><?= $r['status'] === 'weak' ? 'Priority' : 'Review' ?></span>
       </div>
-    </a>
+      <a href="/remediation/<?= htmlspecialchars($r['topic']['slug']) ?>"
+         class="btn btn-primary"
+         style="padding:6px 14px;font-size:0.82rem;min-height:36px;white-space:nowrap">
+        Fix it →
+      </a>
+    </div>
     <?php endforeach; ?>
   </div>
   <?php endif; ?>
