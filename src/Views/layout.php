@@ -27,9 +27,51 @@ $user = \App\Auth::user();
         <a href="/register" class="btn btn-primary" style="padding:6px 14px;font-size:0.85rem">Sign Up</a>
       <?php endif; ?>
     </div>
+    <button class="nav__hamburger" aria-label="Open menu" aria-expanded="false">☰</button>
   </nav>
+
+  <div class="nav__overlay" id="nav-overlay" role="dialog" aria-modal="true" aria-label="Navigation">
+    <div class="nav__overlay-header">
+      <span class="nav__logo">🐘 LearnPHP</span>
+      <button class="nav__close" aria-label="Close menu">✕</button>
+    </div>
+    <nav class="nav__overlay-links">
+      <a href="/learn/php">Topics</a>
+      <a href="/diagnostic">Diagnostic Test</a>
+      <?php if ($user): ?>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/logout">Logout</a>
+      <?php else: ?>
+        <a href="/login">Login</a>
+        <a href="/register" class="btn btn-primary nav__overlay-signup">Sign Up</a>
+      <?php endif; ?>
+    </nav>
+  </div>
+
   <main>
     <?= $content ?>
   </main>
+<script>
+(function () {
+  var overlay   = document.getElementById('nav-overlay');
+  var hamburger = document.querySelector('.nav__hamburger');
+  var closeBtn  = document.querySelector('.nav__close');
+  if (!overlay || !hamburger) return;
+
+  function openMenu()  { overlay.classList.add('open');    hamburger.setAttribute('aria-expanded', 'true');  }
+  function closeMenu() { overlay.classList.remove('open'); hamburger.setAttribute('aria-expanded', 'false'); }
+
+  hamburger.addEventListener('click', openMenu);
+  closeBtn.addEventListener('click', closeMenu);
+
+  overlay.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', closeMenu);
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeMenu();
+  });
+})();
+</script>
 </body>
 </html>
