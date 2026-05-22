@@ -16,6 +16,7 @@ class TopicController
         foreach ($topics as &$t) {
             $t['score'] = Progress::topicScore($token, $t['id'], Auth::user()['id'] ?? null);
         }
+        unset($t); // break reference — prevents last element being overwritten by view's foreach
         $title = strtoupper($lang) . ' Topics';
         ob_start();
         require __DIR__ . '/../Views/topics.php';
