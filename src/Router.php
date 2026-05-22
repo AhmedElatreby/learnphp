@@ -67,6 +67,8 @@ class Router
         $this->get('/diagnostic',                    [new \App\Controllers\DiagnosticController, 'index']);
         $this->post('/diagnostic',                   [new \App\Controllers\DiagnosticController, 'submit']);
         $this->get('/diagnostic/results',            [new \App\Controllers\DiagnosticController, 'results']);
+        $this->get('/remediation/{topic}',           [new \App\Controllers\RemediationController, 'show']);
+        $this->post('/remediation/{topic}',          [new \App\Controllers\RemediationController, 'submit']);
         $this->get('/dashboard',                     [new \App\Controllers\DashboardController, 'index']);
         $this->get('/login',                         [new \App\Controllers\AuthController, 'loginForm']);
         $this->post('/login',                        [new \App\Controllers\AuthController, 'login']);
