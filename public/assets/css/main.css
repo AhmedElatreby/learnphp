@@ -130,6 +130,7 @@ label { display: block; color: var(--muted); font-size: 0.85rem; margin-bottom: 
   line-height: 1;
 }
 .nav__close:hover { color: var(--text); }
+.nav__overlay-logo { font-weight: 700; color: var(--text); font-size: 1.1rem; }
 
 .nav__overlay-links {
   display: flex;

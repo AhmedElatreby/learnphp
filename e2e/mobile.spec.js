@@ -33,4 +33,39 @@ test.describe('Mobile layout', () => {
     const clientWidth = await page.evaluate(() => document.body.clientWidth);
     expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 5); // 5px tolerance
   });
+
+  test('hamburger button is visible on mobile', async ({ page, isMobile }) => {
+    test.skip(!isMobile, 'Hamburger only visible on mobile viewports');
+    await page.goto('/');
+    await expect(page.locator('.nav__hamburger')).toBeVisible();
+    await expect(page.locator('.nav__links')).toBeHidden();
+  });
+
+  test('hamburger opens fullscreen overlay', async ({ page, isMobile }) => {
+    test.skip(!isMobile, 'Hamburger only visible on mobile viewports');
+    await page.goto('/');
+    const overlay = page.locator('#nav-overlay');
+    await expect(overlay).not.toHaveClass(/open/);
+    await page.locator('.nav__hamburger').click();
+    await expect(overlay).toHaveClass(/open/);
+    await expect(page.locator('#nav-overlay a[href="/learn/php"]')).toBeVisible();
+  });
+
+  test('close button dismisses overlay', async ({ page, isMobile }) => {
+    test.skip(!isMobile, 'Hamburger only visible on mobile viewports');
+    await page.goto('/');
+    await page.locator('.nav__hamburger').click();
+    await expect(page.locator('#nav-overlay')).toHaveClass(/open/);
+    await page.locator('.nav__close').click();
+    await expect(page.locator('#nav-overlay')).not.toHaveClass(/open/);
+  });
+
+  test('Escape key closes overlay', async ({ page, isMobile }) => {
+    test.skip(!isMobile, 'Hamburger only visible on mobile viewports');
+    await page.goto('/');
+    await page.locator('.nav__hamburger').click();
+    await expect(page.locator('#nav-overlay')).toHaveClass(/open/);
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#nav-overlay')).not.toHaveClass(/open/);
+  });
 });

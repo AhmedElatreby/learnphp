@@ -32,7 +32,7 @@ $user = \App\Auth::user();
 
   <div class="nav__overlay" id="nav-overlay" role="dialog" aria-modal="true" aria-label="Navigation">
     <div class="nav__overlay-header">
-      <span class="nav__logo">🐘 LearnPHP</span>
+      <span class="nav__overlay-logo">🐘 LearnPHP</span>
       <button class="nav__close" aria-label="Close menu">✕</button>
     </div>
     <nav class="nav__overlay-links">

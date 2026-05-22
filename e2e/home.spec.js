@@ -23,9 +23,12 @@ test.describe('Home page', () => {
   test('nav shows Login and Sign Up for guests', async ({ page, isMobile }) => {
     await page.goto('/');
     if (isMobile) {
-      // Nav links collapse on mobile — element exists in DOM even if not visible
-      // TODO: add hamburger menu for mobile nav
-      await expect(page.locator('.nav a[href="/login"]')).toBeAttached();
+      // Hamburger visible; tap it; links appear in overlay
+      await expect(page.locator('.nav__hamburger')).toBeVisible();
+      await page.locator('.nav__hamburger').click();
+      await expect(page.locator('#nav-overlay')).toHaveClass(/open/);
+      await expect(page.locator('#nav-overlay a[href="/login"]')).toBeVisible();
+      await expect(page.locator('#nav-overlay a[href="/register"]')).toBeVisible();
     } else {
       await expect(page.locator('.nav a[href="/login"]')).toBeVisible();
       await expect(page.locator('.nav a[href="/register"]')).toBeVisible();
