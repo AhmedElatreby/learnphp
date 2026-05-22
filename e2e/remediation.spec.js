@@ -30,13 +30,13 @@ test.describe('Remediation flow', () => {
 
   test('submitting correct answers shows score', async ({ page }) => {
     await page.goto('/remediation/variables');
-    // Fill first two inputs with correct answers
+    // Fill first two inputs with correct answers (gettype, (int)$s)
     await page.locator('input[name^="answer_"]').nth(0).fill('gettype');
     await page.locator('input[name^="answer_"]').nth(1).fill('(int)$s');
     await page.locator('button[type="submit"]').click();
-    // Score should show X / 4
+    // At least 1 answer was correct — score must be ≥ 1/4, not 0/4
     const text = await page.locator('.page').innerText();
-    expect(text).toMatch(/\d+ \/ 4/);
+    expect(text).toMatch(/[1-4] \/ 4/);
   });
 
   test('results page links to practice topic and diagnostic', async ({ page }) => {

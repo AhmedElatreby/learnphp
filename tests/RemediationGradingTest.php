@@ -6,7 +6,11 @@ use App\Models\Challenge;
 use App\Models\Remediation;
 use PHPUnit\Framework\TestCase;
 
-class RemediationControllerTest extends TestCase
+/**
+ * Tests the grading and score calculation logic used by RemediationController::submit().
+ * For end-to-end controller coverage see e2e/remediation.spec.js.
+ */
+class RemediationGradingTest extends TestCase
 {
     protected function setUp(): void
     {

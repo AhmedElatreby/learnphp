@@ -15,7 +15,7 @@
         <span style="margin-left:8px;opacity:.6"><?= htmlspecialchars(str_replace('_', ' ', $c['type'])) ?></span>
       </div>
       <p style="font-weight:500;margin-bottom:10px"><?= htmlspecialchars($c['prompt']) ?></p>
-      <?php if ($c['starter_code']): ?>
+      <?php if ($c['starter_code'] !== ''): ?>
       <div class="code-block" style="margin-bottom:10px"><?= htmlspecialchars($c['starter_code']) ?></div>
       <?php endif; ?>
       <?php if ($c['type'] === 'write_code'): ?>
