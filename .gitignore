@@ -5,3 +5,6 @@ database/*.sqlite
 .superpowers/
 composer.phar
 composer-setup.php
+node_modules/
+test-results/
+.phpunit.result.cache

@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LearnPHP — Design Mockup</title>
+<style>
+/* ── Design tokens (matches main.css) ── */
+:root {
+  --bg:       #0f172a;
+  --bg-card:  #1e293b;
+  --bg-input: #0f172a;
+  --border:   #334155;
+  --text:     #e2e8f0;
+  --muted:    #94a3b8;
+  --primary:  #3b82f6;
+  --success:  #4ade80;
+  --error:    #ef4444;
+  --warning:  #f59e0b;
+  --mono:     'Courier New', monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;font-size:16px;line-height:1.6}
+a{color:var(--primary);text-decoration:none}
+
+/* Nav */
+.nav{background:var(--bg-card);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav__logo{font-weight:700;font-size:1.1rem;color:var(--text)}
+.nav__links{display:flex;gap:20px;align-items:center;font-size:0.9rem}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:8px 18px;border-radius:6px;border:none;font-size:0.9rem;font-weight:600;cursor:pointer;min-height:40px}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-success{background:#166534;color:var(--success)}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-danger{background:#450a0a;color:#fca5a5}
+.btn-sm{padding:4px 10px;font-size:0.8rem;min-height:30px}
+
+/* Cards */
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:20px}
+
+/* Badges */
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:0.75rem;font-weight:600}
+.badge-beginner{background:#052e16;color:#6ee7b7}
+.badge-intermediate{background:#451a03;color:#fcd34d}
+.badge-advanced{background:#450a0a;color:#fca5a5}
+.badge-type{background:var(--bg-card);color:var(--muted);border:1px solid var(--border)}
+
+/* Alerts */
+.alert{padding:12px 16px;border-radius:6px;margin-bottom:12px}
+.alert-success{background:#052e16;border:1px solid #166534;color:var(--success)}
+.alert-error{background:#450a0a;border:1px solid #7f1d1d;color:#fca5a5}
+.alert-info{background:#1e3a5f;border:1px solid #1d4ed8;color:#93c5fd}
+
+/* Progress bar */
+.progress-bar{background:var(--border);border-radius:20px;height:8px;overflow:hidden}
+.progress-bar__fill{background:var(--primary);height:100%;border-radius:20px}
+
+/* Forms */
+input,textarea,select{background:var(--bg-input);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:0.95rem;width:100%}
+label{display:block;color:var(--muted);font-size:0.82rem;margin-bottom:4px}
+.form-group{margin-bottom:14px}
+
+/* Layout utils */
+.page{max-width:1100px;margin:0 auto;padding:28px 20px}
+.page-sm{max-width:480px;margin:0 auto;padding:40px 20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+
+/* Screen switcher */
+.screen-nav{position:sticky;top:0;z-index:100;background:#0a0f1e;border-bottom:2px solid var(--primary);padding:10px 20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.screen-nav span{color:var(--muted);font-size:0.8rem;margin-right:4px}
+.screen-btn{padding:6px 14px;border-radius:4px;border:1px solid var(--border);background:var(--bg-card);color:var(--muted);cursor:pointer;font-size:0.82rem;font-weight:600}
+.screen-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.screen{display:none}
+.screen.active{display:block}
+
+/* Topic grid */
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:16px}
+.topic-card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:16px;cursor:pointer;transition:border-color .15s}
+.topic-card:hover{border-color:var(--primary)}
+
+/* Challenge layout */
+.challenge-layout{display:grid;grid-template-columns:1fr 290px;gap:20px;align-items:start}
+.challenge-topbar{background:var(--bg-card);border:1px solid var(--border);border-radius:8px 8px 0 0;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;font-size:0.85rem;color:var(--muted);margin-bottom:-1px}
+.code-block{background:#1a1a2e;border:1px solid var(--border);border-radius:6px;padding:14px;font-family:var(--mono);font-size:0.88rem;overflow-x:auto;white-space:pre;margin-bottom:12px}
+.code-editor-mock{background:#1a1a2e;border:1px solid var(--primary);border-radius:6px;padding:14px;font-family:var(--mono);font-size:0.88rem;min-height:130px;position:relative}
+.code-editor-mock::after{content:'PHP  ●';position:absolute;bottom:8px;right:10px;font-size:0.7rem;color:var(--muted)}
+.cm-keyword{color:#c678dd}
+.cm-string{color:#98c379}
+.cm-variable{color:#e06c75}
+.cm-comment{color:#5c6370;font-style:italic}
+.cm-number{color:#d19a66}
+.cm-function{color:#61afef}
+
+.tip-card{background:var(--bg-card);border-left:3px solid var(--primary);border-radius:6px;padding:12px;margin-bottom:10px;font-size:0.84rem}
+.tip-card h4{color:#93c5fd;margin-bottom:4px;font-size:0.84rem}
+.tip-card p{color:var(--muted);line-height:1.5}
+.tip-card.tip-warning{border-left-color:var(--warning)}
+.tip-card.tip-warning h4{color:#fcd34d}
+.challenge-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+/* Lock state */
+.challenge-card-locked{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:16px;opacity:.5;cursor:not-allowed;position:relative}
+.challenge-card-unlocked{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:16px;cursor:pointer;transition:border-color .15s}
+.challenge-card-unlocked:hover{border-color:var(--primary)}
+.challenge-card-done{background:var(--bg-card);border:1px solid #166534;border-radius:8px;padding:16px;cursor:pointer}
+
+/* Admin table */
+table{width:100%;border-collapse:collapse;font-size:0.88rem}
+th{text-align:left;color:var(--muted);font-size:0.78rem;text-transform:uppercase;letter-spacing:.5px;padding:8px 12px;border-bottom:1px solid var(--border)}
+td{padding:8px 12px;border-bottom:1px solid #1e293b;vertical-align:middle}
+tr:hover td{background:#1e293b55}
+
+/* Mobile note */
+.mobile-note{background:#1e293b;border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:0.82rem;color:var(--muted);margin-bottom:16px}
+.mobile-note strong{color:var(--text)}
+
+/* Responsive preview frame */
+.frame-label{font-size:0.75rem;color:var(--muted);text-align:center;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+.frames{display:flex;gap:20px;align-items:flex-start;margin-top:20px;flex-wrap:wrap}
+.frame-desktop{flex:1;min-width:300px}
+.frame-mobile{width:375px;border:2px solid var(--border);border-radius:12px;overflow:hidden}
+.frame-mobile-inner{padding:0;transform-origin:top left}
+</style>
+</head>
+<body>
+
+<!-- Screen switcher -->
+<div class="screen-nav">
+  <span>SCREENS →</span>
+  <button class="screen-btn active" onclick="show('home')">🏠 Home</button>
+  <button class="screen-btn" onclick="show('topics')">📚 Topics</button>
+  <button class="screen-btn" onclick="show('topic-detail')">🔒 Topic (gating)</button>
+  <button class="screen-btn" onclick="show('challenge-fill')">✏️ Fill-blank</button>
+  <button class="screen-btn" onclick="show('challenge-code')">💻 Write Code</button>
+  <button class="screen-btn" onclick="show('challenge-pass')">✅ Correct!</button>
+  <button class="screen-btn" onclick="show('dashboard')">📊 Dashboard</button>
+  <button class="screen-btn" onclick="show('admin-list')">🔧 Admin List</button>
+  <button class="screen-btn" onclick="show('admin-form')">➕ Admin Form</button>
+  <button class="screen-btn" onclick="show('mobile')">📱 Mobile</button>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SCREEN: HOME                                  -->
+<!-- ══════════════════════════════════════════════ -->
+<div id="home" class="screen active">
+  <nav class="nav">
+    <span class="nav__logo">🐘 LearnPHP</span>
+    <div class="nav__links">
+      <a href="#">Topics</a>
+      <a href="#">Diagnostic Test</a>
+      <a href="#" class="btn btn-primary" style="padding:6px 14px;font-size:0.85rem">Sign Up</a>
+    </div>
+  </nav>
+  <div class="page">
+    <div style="text-align:center;padding:60px 0 40px">
+      <div style="font-size:3rem;margin-bottom:12px">🐘</div>
+      <h1 style="font-size:2.2rem;font-weight:800;margin-bottom:12px">Learn PHP — for free</h1>
+      <p style="color:var(--muted);font-size:1.1rem;max-width:520px;margin:0 auto 28px">
+        Challenges, instant feedback, and a learning plan built around <em>you</em>.
+        Take the diagnostic test to find your gaps, then fix them — one challenge at a time.
+      </p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a href="#" class="btn btn-primary" style="font-size:1rem;padding:12px 28px">🧪 Take the Diagnostic Test</a>
+        <a href="#" class="btn btn-ghost" style="font-size:1rem;padding:12px 28px">Browse PHP Topics</a>
+      </div>
+      <p style="color:var(--muted);font-size:0.82rem;margin-top:16px">No sign-up required to start →</p>
+    </div>
+    <div class="grid-3" style="margin-top:20px">
+      <div class="card"><div style="font-size:1.8rem;margin-bottom:8px">🎯</div><h3 style="margin-bottom:6px">Targeted Challenges</h3><p style="color:var(--muted);font-size:0.9rem">Fill-in-the-blank, write code, and spot-the-bug exercises that build real PHP skills.</p></div>
+      <div class="card"><div style="font-size:1.8rem;margin-bottom:8px">💡</div><h3 style="margin-bottom:6px">Teach on Mistakes</h3><p style="color:var(--muted);font-size:0.9rem">Get something wrong? The site explains why, then checks you actually understood before moving on.</p></div>
+      <div class="card"><div style="font-size:1.8rem;margin-bottom:8px">📊</div><h3 style="margin-bottom:6px">Personalised Plan</h3><p style="color:var(--muted);font-size:0.9rem">The diagnostic test finds exactly what you know and don't. Your learning plan focuses on what matters.</p></div>
+    </div>
+    <div class="grid-3" style="margin-top:14px">
+      <div class="card"><div style="font-size:1.8rem;margin-bottom:8px">🐘</div><h3 style="margin-bottom:6px">PHP</h3><p style="color:var(--muted);font-size:0.9rem">Available now — 5 topics, 40+ challenges.</p><div style="margin-top:10px"><span class="badge badge-beginner">Live</span></div></div>
+      <div class="card" style="opacity:.45"><div style="font-size:1.8rem;margin-bottom:8px">🟨</div><h3 style="margin-bottom:6px">JavaScript</h3><p style="color:var(--muted);font-size:0.9rem">Coming soon.</p><div style="margin-top:10px"><span class="badge" style="background:var(--bg);color:var(--muted);border:1px solid var(--border)">Soon</span></div></div>
+      <div class="card" style="opacity:.45"><div style="font-size:1.8rem;margin-bottom:8px">🐍</div><h3 style="margin-bottom:6px">Python</h3><p style="color:var(--muted);font-size:0.9rem">Coming soon.</p><div style="margin-top:10px"><span class="badge" style="background:var(--bg);color:var(--muted);border:1px solid var(--border)">Soon</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SCREEN: TOPICS LIST                           -->
+<!-- ══════════════════════════════════════════════ -->
+<div id="topics" class="screen">
+  <nav class="nav">
+    <span class="nav__logo">🐘 LearnPHP</span>
+    <div class="nav__links"><a href="#">Topics</a><a href="#">Diagnostic</a><a href="#">Dashboard</a><a href="#">Logout</a></div>
+  </nav>
+  <div class="page">
+    <h1 style="margin-bottom:4px">PHP Topics</h1>
+    <p style="color:var(--muted);margin-bottom:24px">Work through each topic in order. Complete challenges to unlock the next.</p>
+    <div class="topic-grid">
+      <!-- Done -->
+      <div class="topic-card" style="border-color:#166534">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-weight:600;font-size:0.95rem">Variables &amp; Data Types</span>
+          <span style="color:var(--success)">✅</span>
+        </div>
+        <div class="progress-bar"><div class="progress-bar__fill" style="width:100%;background:var(--success)"></div></div>
+        <div style="color:var(--muted);font-size:0.75rem;margin-top:4px">100% — 8/8 done</div>
+      </div>
+      <!-- In progress -->
+      <div class="topic-card" style="border-color:var(--warning)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-weight:600;font-size:0.95rem">Operators</span>
+          <span style="color:var(--warning)">⏳</span>
+        </div>
+        <div class="progress-bar"><div class="progress-bar__fill" style="width:37%;background:var(--warning)"></div></div>
+        <div style="color:var(--muted);font-size:0.75rem;margin-top:4px">37% — 3/8 done</div>
+      </div>
+      <!-- Locked -->
+      <div class="topic-card" style="opacity:.4;cursor:not-allowed">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-weight:600;font-size:0.95rem">Strings</span>
+          <span>🔒</span>
+        </div>
+        <div class="progress-bar"><div class="progress-bar__fill" style="width:0%"></div></div>
+        <div style="color:var(--muted);font-size:0.75rem;margin-top:4px">Complete Operators first</div>
+      </div>
+      <div class="topic-card" style="opacity:.4;cursor:not-allowed">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-weight:600;font-size:0.95rem">Arrays</span><span>🔒</span></div>
+        <div class="progress-bar"><div class="progress-bar__fill" style="width:0%"></div></div>
+        <div style="color:var(--muted);font-size:0.75rem;margin-top:4px">Complete Strings first</div>
+      </div>
+      <div class="topic-card" style="opacity:.4;cursor:not-allowed">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-weight:600;font-size:0.95rem">Conditionals</span><span>🔒</span></div>
+        <div class="progress-bar"><div class="progress-bar__fill" style="width:0%"></div></div>
+        <div style="color:var(--muted);font-size:0.75rem;margin-top:4px">Complete Arrays first</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SCREEN: TOPIC DETAIL (progression gating)    -->
+<!-- ══════════════════════════════════════════════ -->
+<div id="topic-detail" class="screen">
+  <nav class="nav">
+    <span class="nav__logo">🐘 LearnPHP</span>
+    <div class="nav__links"><a href="#">Topics</a><a href="#">Diagnostic</a><a href="#">Dashboard</a><a href="#">Logout</a></div>
+  </nav>
+  <div class="page">
+    <div style="margin-bottom:6px"><a href="#" style="color:var(--muted);font-size:0.85rem">← PHP Topics</a></div>
+    <h1 style="margin-bottom:4px">Operators</h1>
+    <p style="color:var(--muted);margin-bottom:20px">Arithmetic, comparison, and logical operators in PHP.</p>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <!-- Done -->
+      <div class="challenge-card-done">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <span style="color:var(--success);margin-right:8px">✅</span>
+            <span style="font-weight:600">Arithmetic Operators</span>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="badge badge-beginner">Beginner</span>
+            <span class="badge badge-type">Fill Blank</span>
+            <a href="#" class="btn btn-success btn-sm">Review</a>
+          </div>
+        </div>
+      </div>
+      <div class="challenge-card-done">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><span style="color:var(--success);margin-right:8px">✅</span><span style="font-weight:600">Comparison Operators</span></div>
+          <div style="display:flex;gap:6px;align-items:center"><span class="badge badge-beginner">Beginner</span><span class="badge badge-type">Fill Blank</span><a href="#" class="btn btn-success btn-sm">Review</a></div>
+        </div>
+      </div>
+      <div class="challenge-card-done">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><span style="color:var(--success);margin-right:8px">✅</span><span style="font-weight:600">Boolean Logic</span></div>
+          <div style="display:flex;gap:6px;align-items:center"><span class="badge badge-beginner">Beginner</span><span class="badge badge-type">Spot Bug</span><a href="#" class="btn btn-success btn-sm">Review</a></div>
+        </div>
+      </div>
+
+      <!-- Current (unlocked, not done) -->
+      <div class="challenge-card-unlocked" style="border-color:var(--primary)">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <span style="color:var(--primary);margin-right:8px">▶</span>
+            <span style="font-weight:600">Ternary Operator</span>
+            <span style="color:var(--muted);font-size:0.8rem;margin-left:8px">← current</span>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="badge badge-intermediate">Intermediate</span>
+            <span class="badge badge-type">Write Code</span>
+            <a href="#" class="btn btn-primary btn-sm">Start →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Locked -->
+      <div class="challenge-card-locked">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><span style="margin-right:8px">🔒</span><span style="font-weight:600">Null Coalescing</span></div>
+          <div style="display:flex;gap:6px"><span class="badge badge-intermediate">Intermediate</span><span class="badge badge-type">Fill Blank</span></div>
+        </div>
+        <div style="color:var(--muted);font-size:0.78rem;margin-top:6px">Complete the previous challenge first.</div>
+      </div>
+      <div class="challenge-card-locked">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><span style="margin-right:8px">🔒</span><span style="font-weight:600">Spaceship Operator</span></div>
+          <div style="display:flex;gap:6px"><span class="badge badge-intermediate">Intermediate</span><span class="badge badge-type">Spot Bug</span></div>
+        </div>
+        <div style="color:var(--muted);font-size:0.78rem;margin-top:6px">Complete the previous challenge first.</div>
+      </div>
+      <div class="challenge-card-locked">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><span style="margin-right:8px">🔒</span><span style="font-weight:600">Operator Precedence</span></div>
+          <div style="display:flex;gap:6px"><span class="badge badge-advanced">Advanced</span><span class="badge badge-type">Write Code</span></div>
+        </div>
+        <div style="color:var(--muted);font-size:0.78rem;margin-top:6px">Complete the previous challenge first.</div>
+      </div>
+      <div class="challenge-card-locked">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><span style="margin-right:8px">🔒</span><span style="font-weight:600">Bitwise Operators</span></div>
+          <div style="display:flex;gap:6px"><span class="badge badge-advanced">Advanced</span><span class="badge badge-type">Spot Bug</span></div>
+        </div>
+        <div style="color:var(--muted);font-size:0.78rem;margin-top:6px">Complete the previous challenge first.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;display:flex;gap:12px">
+      <a href="#" class="btn btn-ghost">📝 Section Test</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SCREEN: CHALLENGE — FILL BLANK                -->
+<!-- ══════════════════════════════════════════════ -->
+<div id="challenge-fill" class="screen">
+  <nav class="nav">
+    <span class="nav__logo">🐘 LearnPHP</span>
+    <div class="nav__links"><a href="#">Topics</a><a href="#">Diagnostic</a><a href="#">Dashboard</a><a href="#">Logout</a></div>
+  </nav>
+  <div class="page">
+    <div class="challenge-topbar">
+      <span><a href="#" style="color:var(--muted)">PHP</a> › <a href="#" style="color:var(--muted)">Operators</a> › Challenge 4 of 8</span>
+      <div style="display:flex;gap:8px"><span class="badge badge-intermediate">Intermediate</span><span class="badge badge-type">Fill Blank</span></div>
+    </div>
+    <div class="challenge-layout">
+      <div>
+        <div class="card" style="border-radius:0 0 8px 8px;margin-bottom:16px">
+          <h2 style="font-size:1.1rem;margin-bottom:6px">Ternary Operator</h2>
+          <p style="color:var(--muted);margin-bottom:14px">Fill in the blank — use the ternary operator to set <code style="color:#93c5fd">$label</code> to <code style="color:#93c5fd">"adult"</code> if <code style="color:#93c5fd">$age</code> is 18 or over, otherwise <code style="color:#93c5fd">"minor"</code>.</p>
+          <div class="code-block">$age = 20;
+$label = ______;</div>
+          <div class="form-group">
+            <label>Your answer:</label>
+            <input type="text" placeholder="Type your answer..." value="$age >= 18 ? 'adult' : 'minor'" style="font-family:var(--mono)">
+          </div>
+          <div class="challenge-actions">
+            <button class="btn btn-primary">✓ Check Answer</button>
+            <button class="btn btn-ghost">💡 Hint</button>
+          </div>
+        </div>
+        <div id="feedback"></div>
+      </div>
+      <div>
+        <div class="card">
+          <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">💡 Learning Tips</div>
+          <div class="tip-card"><h4>Ternary Syntax</h4><p>condition ? value_if_true : value_if_false — a compact if/else in one line.</p></div>
+          <div class="tip-card tip-warning"><h4>Common Mistake</h4><p>Don't nest ternaries — PHP 8 deprecated them. Use if/else for complex logic.</p></div>
+          <div class="tip-card"><h4>Quick Reference</h4><p>$x = $a > $b ? 'yes' : 'no';<br>// same as:<br>if ($a > $b) $x = 'yes';<br>else $x = 'no';</p></div>
+          <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+            <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Progress</div>
+            <div style="color:var(--text);font-size:0.85rem;margin-bottom:6px">Operators</div>
+            <div class="progress-bar"><div class="progress-bar__fill" style="width:37%"></div></div>
+            <div style="color:var(--muted);font-size:0.78rem;margin-top:4px">3 of 8 done</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SCREEN: CHALLENGE — WRITE CODE (CodeMirror)  -->
+<!-- ══════════════════════════════════════════════ -->
+<div id="challenge-code" class="screen">
+  <nav class="nav">
+    <span class="nav__logo">🐘 LearnPHP</span>
+    <div class="nav__links"><a href="#">Topics</a><a href="#">Diagnostic</a><a href="#">Dashboard</a><a href="#">Logout</a></div>
+  </nav>
+  <div class="page">
+    <div class="challenge-topbar">
+      <span><a href="#" style="color:var(--muted)">PHP</a> › <a href="#" style="color:var(--muted)">Variables</a> › Challenge 3 of 8</span>
+      <div style="display:flex;gap:8px"><span class="badge badge-beginner">Beginner</span><span class="badge badge-type">Write Code</span></div>
+    </div>
+    <div class="challenge-layout">
+      <div>
+        <div class="card" style="border-radius:0 0 8px 8px;margin-bottom:16px">
+          <h2 style="font-size:1.1rem;margin-bottom:6px">Type Juggling</h2>
+          <p style="color:var(--muted);margin-bottom:14px">Write PHP code that creates a variable <code style="color:#93c5fd">$result</code> containing the integer sum of <code style="color:#93c5fd">"5"</code> and <code style="color:#93c5fd">3</code>, then echo it.</p>
+          <div class="form-group">
+            <label>Your code: <span style="color:var(--muted);font-size:0.78rem">(CodeMirror editor — PHP syntax highlighting)</span></label>
+            <!-- CodeMirror mock -->
+            <div class="code-editor-mock">
+<span class="cm-variable">$result</span> = <span class="cm-string">"5"</span> + <span class="cm-number">3</span>;
+<span class="cm-keyword">echo</span> <span class="cm-variable">$result</span>;
+<span class="cm-comment">// cursor here▌</span>
+            </div>
+          </div>
+          <div class="challenge-actions">
+            <button class="btn btn-primary">✓ Check Answer</button>
+            <button class="btn btn-ghost">▶ Run Code</button>
+            <button class="btn btn-ghost">💡 Hint</button>
+          </div>
+        </div>
+        <!-- Runner output -->
+        <div class="card" style="margin-bottom:12px">
+          <div style="color:var(--muted);font-size:0.8rem;margin-bottom:6px">Output (php-wasm):</div>
+          <pre style="margin:0;font-size:0.88rem;color:var(--success)">8</pre>
+        </div>
+        <div id="feedback2"></div>
+      </div>
+      <div>
+        <div class="card">
+          <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">💡 Learning Tips</div>
+          <div class="tip-card"><h4>Type Juggling</h4><p>PHP automatically converts types. A string like "5" plus an int 3 gives integer 8.</p></div>
+          <div class="tip-card tip-warning"><h4>Common Mistake</h4><p>Concatenation uses the dot (.) operator, not +. "5" . 3 gives "53", not 8.</p></div>
+          <div class="tip-card"><h4>Quick Reference</h4><p>"5" + 3  → 8 (int)<br>"5" . 3  → "53" (string)<br>intval("5") → 5</p></div>
+          <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+            <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Progress</div>
+            <div style="color:var(--text);font-size:0.85rem;margin-bottom:6px">Variables &amp; Data Types</div>
+            <div class="progress-bar"><div class="progress-bar__fill" style="width:25%"></div></div>
+            <div style="color:var(--muted);font-size:0.78rem;margin-top:4px">2 of 8 done</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SCREEN: CHALLENGE — CORRECT ANSWER            -->
+<!-- ══════════════════════════════════════════════ -->
+<div id="challenge-pass" class="screen">
+  <nav class="nav">
+    <span class="nav__logo">🐘 LearnPHP</span>
+    <div class="nav__links"><a href="#">Topics</a><a href="#">Diagnostic</a><a href="#">Dashboard</a><a href="#">Logout</a></div>
+  </nav>
+  <div class="page">
+    <div class="challenge-topbar">
+      <span><a href="#" style="color:var(--muted)">PHP</a> › <a href="#" style="color:var(--muted)">Operators</a> › Challenge 4 of 8</span>
+      <div style="display:flex;gap:8px"><span class="badge badge-intermediate">Intermediate</span><span class="badge badge-type">Fill Blank</span></div>
+    </div>
+    <div class="challenge-layout">
+      <div>
+        <div class="card" style="border-radius:0 0 8px 8px;margin-bottom:16px">
+          <h2 style="font-size:1.1rem;margin-bottom:6px">Ternary Operator</h2>
+          <p style="color:var(--muted);margin-bottom:14px">Fill in the blank…</p>
+          <div class="code-block">$age = 20;
+$label = ______;</div>
+          <div class="form-group">
+            <label>Your answer:</label>
+            <input type="text" value="$age >= 18 ? 'adult' : 'minor'" style="font-family:var(--mono);border-color:var(--success)">
+          </div>
+        </div>
+        <!-- Feedback: correct -->
+        <div class="alert alert-success" style="margin-bottom:12px">
+          <strong>✅ Correct!</strong>
+          <p style="margin-top:6px">The ternary operator is a shorthand if/else. <code>condition ? value_if_true : value_if_false</code> — when $age is 20 and the condition is true, $label becomes "adult".</p>
+          <div style="margin-top:12px"><a href="#" class="btn btn-success">→ Next Challenge</a></div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">💡 Learning Tips</div>
+          <div class="tip-card"><h4>Ternary Syntax</h4><p>condition ? value_if_true : value_if_false</p></div>
+          <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+            <div style="color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Progress</div>
+            <div style="color:var(--text);font-size:0.85rem;margin-bottom:6px">Operators</div>
+            <div class="progress-bar"><div class="progress-bar__fill" style="width:50%"></div></div>
+            <div style="color:var(--muted);font-size:0.78rem;margin-top:4px">4 of 8 done</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SCREEN: DASHBOARD                             -->
+<!-- ══════════════════════════════════════════════ -->
+<div id="dashboard" class="screen">
+  <nav class="nav">
+    <span class="nav__logo">🐘 LearnPHP</span>
+    <div class="nav__links"><a href="#">Topics</a><a href="#">Diagnostic</a><a href="#">Dashboard</a><a href="#">Logout</a></div>
+  </nav>
+  <div class="page">
+    <h1 style="margin-bottom:4px">Welcome back, Ahmed 👋</h1>
+    <p style="color:var(--muted);margin-bottom:28px">Here's your PHP learning progress.</p>
+    <div class="grid-3" style="margin-bottom:28px">
+      <div class="card" style="text-align:center"><div style="color:var(--success);font-size:1.8rem;font-weight:700">1</div><div style="color:var(--muted);font-size:0.85rem">Topics Mastered</div></div>
+      <div class="card" style="text-align:center"><div style="color:var(--warning);font-size:1.8rem;font-weight:700">1</div><div style="color:var(--muted);font-size:0.85rem">In Progress</div></div>
+      <div class="card" style="text-align:center"><div style="color:var(--primary);font-size:1.8rem;font-weight:700">3</div><div style="color:var(--muted);font-size:0.85rem">Topics Left</div></div>
+    </div>
+    <div class="card" style="margin-bottom:28px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div><div style="color:var(--muted);font-size:0.8rem;margin-bottom:4px">Continue where you left off</div><div style="font-weight:600">Operators</div></div>
+      <a href="#" class="btn btn-primary">Continue →</a>
+    </div>
+    <h3 style="margin-bottom:14px">All Topics</h3>
+    <div class="topic-grid">
+      <div class="card"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:0.9rem;font-weight:600">Variables &amp; Data Types</span><span style="color:var(--success)">✅</span></div><div class="progress-bar"><div class="progress-bar__fill" style="width:100%;background:var(--success)"></div></div><div style="color:var(--muted);font-size:0.75rem;margin-top:4px">100%</div></div>
+      <div class="card"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:0.9rem;font-weight:600">Operators</span><span style="color:var(--warning)">⏳</span></div><div class="progress-bar"><div class="progress-bar__fill" style="width:37%;background:var(--warning)"></div></div><div style="color:var(--muted);font-size:0.75rem;margin-top:4px">37%</div></div>
+      <div class="card" style="opacity:.4"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:0.9rem;font-weight:600">Strings</span></div><div class="progress-bar"><div class="progress-bar__fill" style="width:0%"></div></div><div style="color:var(--muted);font-size:0.75rem;margin-top:4px">0%</div></div>
+      <div class="card" style="opacity:.4"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:0.9rem;font-weight:600">Arrays</span></div><div class="progress-bar"><div class="progress-bar__fill" style="width:0%"></div></div><div style="color:var(--muted);font-size:0.75rem;margin-top:4px">0%</div></div>
+      <div class="card" style="opacity:.4"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:0.9rem;font-weight:600">Conditionals</span></div><div class="progress-bar"><div class="progress-bar__fill" style="width:0%"></div></div><div style="color:var(--muted);font-size:0.75rem;margin-top:4px">0%</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SCREEN: ADMIN — CHALLENGE LIST               -->
+<!-- ══════════════════════════════════════════════ -->
+<div id="admin-list" class="screen">
+  <nav class="nav">
+    <span class="nav__logo">🐘 LearnPHP <span style="color:var(--warning);font-size:0.8rem;margin-left:8px">ADMIN</span></span>
+    <div class="nav__links"><a href="#">View Site</a><a href="#">Logout</a></div>
+  </nav>
+  <div class="page">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div>
+        <h1 style="margin-bottom:2px">Challenges</h1>
+        <p style="color:var(--muted);font-size:0.85rem">Admin › Challenges — 40 challenges across 5 topics</p>
+      </div>
+      <a href="#" class="btn btn-primary">+ Add Challenge</a>
+    </div>
+
+    <!-- PHP / Variables -->
+    <div class="card" style="margin-bottom:16px;padding:0;overflow:hidden">
+      <div style="padding:12px 16px;background:#1a2744;border-bottom:1px solid var(--border);font-size:0.85rem;font-weight:600">
+        🐘 PHP › Variables &amp; Data Types <span style="color:var(--muted);font-weight:400">(8 challenges)</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>ID</th><th>Title</th><th>Type</th><th>Difficulty</th><th>Diag</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--muted)">1</td><td>Declare a Variable</td><td><span class="badge badge-type">fill_blank</span></td><td><span class="badge badge-beginner">beginner</span></td><td style="text-align:center">✅</td><td style="white-space:nowrap"><a href="#" class="btn btn-ghost btn-sm">Edit</a> <button class="btn btn-danger btn-sm">Delete</button></td></tr>
+            <tr><td style="color:var(--muted)">2</td><td>Integer vs String</td><td><span class="badge badge-type">spot_bug</span></td><td><span class="badge badge-beginner">beginner</span></td><td style="text-align:center">✅</td><td style="white-space:nowrap"><a href="#" class="btn btn-ghost btn-sm">Edit</a> <button class="btn btn-danger btn-sm">Delete</button></td></tr>
+            <tr><td style="color:var(--muted)">3</td><td>Type Juggling</td><td><span class="badge badge-type">write_code</span></td><td><span class="badge badge-beginner">beginner</span></td><td style="text-align:center">—</td><td style="white-space:nowrap"><a href="#" class="btn btn-ghost btn-sm">Edit</a> <button class="btn btn-danger btn-sm">Delete</button></td></tr>
+            <tr><td style="color:var(--muted)">4</td><td>Constants</td><td><span class="badge badge-type">fill_blank</span></td><td><span class="badge badge-intermediate">intermediate</span></td><td style="text-align:center">—</td><td style="white-space:nowrap"><a href="#" class="btn btn-ghost btn-sm">Edit</a> <button class="btn btn-danger btn-sm">Delete</button></td></tr>
+            <tr><td colspan="6" style="text-align:center;color:var(--muted);font-size:0.8rem;padding:6px">+ 4 more…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PHP / Operators -->
+    <div class="card" style="margin-bottom:16px;padding:0;overflow:hidden">
+      <div style="padding:12px 16px;background:#1a2744;border-bottom:1px solid var(--border);font-size:0.85rem;font-weight:600">
+        🐘 PHP › Operators <span style="color:var(--muted);font-weight:400">(8 challenges)</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>ID</th><th>Title</th><th>Type</th><th>Difficulty</th><th>Diag</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--muted)">9</td><td>Arithmetic Operators</td><td><span class="badge badge-type">fill_blank</span></td><td><span class="badge badge-beginner">beginner</span></td><td style="text-align:center">✅</td><td style="white-space:nowrap"><a href="#" class="btn btn-ghost btn-sm">Edit</a> <button class="btn btn-danger btn-sm">Delete</button></td></tr>
+            <tr><td colspan="6" style="text-align:center;color:var(--muted);font-size:0.8rem;padding:6px">+ 7 more…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SCREEN: ADMIN — CHALLENGE FORM               -->
+<!-- ══════════════════════════════════════════════ -->
+<div id="admin-form" class="screen">
+  <nav class="nav">
+    <span class="nav__logo">🐘 LearnPHP <span style="color:var(--warning);font-size:0.8rem;margin-left:8px">ADMIN</span></span>
+    <div class="nav__links"><a href="#">← Back to Challenges</a></div>
+  </nav>
+  <div class="page" style="max-width:720px">
+    <h1 style="margin-bottom:4px">Add Challenge</h1>
+    <p style="color:var(--muted);margin-bottom:24px">Admin › Challenges › New</p>
+
+    <div class="card">
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Language</label>
+          <select><option>🐘 PHP</option><option disabled>🟨 JavaScript (soon)</option></select>
+        </div>
+        <div class="form-group">
+          <label>Topic</label>
+          <select><option>Variables &amp; Data Types</option><option>Operators</option><option>Strings</option><option>Arrays</option><option>Conditionals</option></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" placeholder="e.g. Ternary Operator">
+      </div>
+      <div class="form-group">
+        <label>Prompt</label>
+        <textarea rows="3" placeholder="What does the user need to do?"></textarea>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Type</label>
+          <select><option>fill_blank</option><option>write_code</option><option>spot_bug</option></select>
+        </div>
+        <div class="form-group">
+          <label>Difficulty</label>
+          <select><option>beginner</option><option>intermediate</option><option>advanced</option></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Starter Code <span style="color:var(--muted)">(shown above the answer box)</span></label>
+        <textarea rows="3" style="font-family:var(--mono);font-size:0.88rem" placeholder="$age = 20;&#10;$label = ______;"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Solution <span style="color:var(--muted)">(the correct answer)</span></label>
+        <input type="text" style="font-family:var(--mono)" placeholder="e.g. $age >= 18 ? 'adult' : 'minor'">
+      </div>
+      <div class="form-group">
+        <label>Hint <span style="color:var(--muted)">(shown when user clicks 💡)</span></label>
+        <input type="text" placeholder="A nudge in the right direction…">
+      </div>
+      <div class="form-group">
+        <label>Explanation <span style="color:var(--muted)">(shown after answering)</span></label>
+        <textarea rows="3" placeholder="Explain the concept thoroughly…"></textarea>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Sort Order</label>
+          <input type="number" value="0">
+        </div>
+        <div class="form-group">
+          <label>Diagnostic challenge?</label>
+          <select><option value="0">No</option><option value="1">Yes</option></select>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button class="btn btn-primary">💾 Save Challenge</button>
+        <a href="#" class="btn btn-ghost">Cancel</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SCREEN: MOBILE PREVIEW                        -->
+<!-- ══════════════════════════════════════════════ -->
+<div id="mobile" class="screen">
+  <div style="background:#0a0f1e;padding:20px;text-align:center">
+    <p style="color:var(--muted);font-size:0.85rem;margin-bottom:20px">375px mobile preview — same dark theme, stacked layout</p>
+    <div style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap;align-items:flex-start">
+
+      <!-- Mobile: Topic list -->
+      <div>
+        <div class="frame-label">Topics page</div>
+        <div class="frame-mobile" style="width:320px">
+          <div style="background:var(--bg-card);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
+            <span style="font-weight:700;font-size:0.95rem">🐘 LearnPHP</span>
+            <span style="font-size:1.2rem;cursor:pointer;color:var(--muted)">☰</span>
+          </div>
+          <div style="padding:14px;background:var(--bg)">
+            <h2 style="font-size:1rem;margin-bottom:4px">PHP Topics</h2>
+            <p style="color:var(--muted);font-size:0.78rem;margin-bottom:12px">Complete challenges to unlock next topics.</p>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div class="topic-card" style="border-color:#166534;padding:12px"><div style="display:flex;justify-content:space-between"><span style="font-size:0.85rem;font-weight:600">Variables</span><span style="color:var(--success)">✅</span></div><div class="progress-bar" style="margin-top:6px"><div class="progress-bar__fill" style="width:100%;background:var(--success)"></div></div></div>
+              <div class="topic-card" style="border-color:var(--warning);padding:12px"><div style="display:flex;justify-content:space-between"><span style="font-size:0.85rem;font-weight:600">Operators</span><span style="color:var(--warning)">⏳</span></div><div class="progress-bar" style="margin-top:6px"><div class="progress-bar__fill" style="width:37%;background:var(--warning)"></div></div></div>
+              <div class="topic-card" style="opacity:.4;padding:12px"><div style="display:flex;justify-content:space-between"><span style="font-size:0.85rem;font-weight:600">Strings</span><span>🔒</span></div><div class="progress-bar" style="margin-top:6px"><div class="progress-bar__fill" style="width:0%"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile: Challenge -->
+      <div>
+        <div class="frame-label">Challenge page</div>
+        <div class="frame-mobile" style="width:320px">
+          <div style="background:var(--bg-card);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
+            <span style="font-weight:700;font-size:0.95rem">🐘 LearnPHP</span>
+            <span style="font-size:1.2rem;cursor:pointer;color:var(--muted)">☰</span>
+          </div>
+          <div style="padding:14px;background:var(--bg)">
+            <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:0.75rem;color:var(--muted);margin-bottom:12px;display:flex;justify-content:space-between">
+              <span>Operators › Ch 4 of 8</span>
+              <div style="display:flex;gap:4px"><span class="badge badge-intermediate" style="font-size:0.65rem">Mid</span></div>
+            </div>
+            <div class="card" style="padding:14px;margin-bottom:10px">
+              <h3 style="font-size:0.95rem;margin-bottom:6px">Ternary Operator</h3>
+              <p style="color:var(--muted);font-size:0.8rem;margin-bottom:10px">Fill in the blank to use the ternary operator…</p>
+              <div class="code-block" style="font-size:0.78rem;margin-bottom:10px">$age = 20;
+$label = ______;</div>
+              <label style="font-size:0.78rem">Your answer:</label>
+              <input type="text" style="font-size:0.85rem;padding:8px 10px;font-family:var(--mono)" placeholder="Type answer…">
+              <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+                <button class="btn btn-primary" style="flex:1;font-size:0.82rem;padding:8px">✓ Check</button>
+                <button class="btn btn-ghost" style="font-size:0.82rem;padding:8px">💡</button>
+              </div>
+            </div>
+            <!-- Tips collapsed on mobile -->
+            <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:0.8rem;color:var(--muted);cursor:pointer">
+              💡 Learning Tips (tap to expand)
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.screen-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
