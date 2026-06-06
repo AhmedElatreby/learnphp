@@ -2,12 +2,12 @@
 const { test, expect } = require('@playwright/test');
 
 test.describe('Topics page', () => {
-  test('lists all 5 PHP topics', async ({ page }) => {
+  test('lists PHP topics', async ({ page }) => {
     await page.goto('/learn/php');
     await expect(page.locator('h1')).toContainText('PHP');
     // Each topic is an <a> wrapping a .card — count anchors in the grid
     const topicLinks = page.locator('.topic-grid > a');
-    await expect(topicLinks).toHaveCount(5);
+    await expect(topicLinks).toHaveCount(28);
   });
 
   test('topic names are correct', async ({ page }) => {
