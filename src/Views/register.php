@@ -7,6 +7,7 @@
   <?php endif; ?>
 
   <form method="POST" action="/register">
+    <input type="hidden" name="_token" value="<?= htmlspecialchars(\App\Auth::csrfToken()) ?>">
     <div class="form-group">
       <label>Username</label>
       <input type="text" name="username" required minlength="2" autofocus>

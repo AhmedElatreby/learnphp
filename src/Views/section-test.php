@@ -6,6 +6,7 @@
   </div>
 
   <form method="POST">
+    <input type="hidden" name="_token" value="<?= htmlspecialchars(\App\Auth::csrfToken()) ?>">
     <?php foreach ($challenges as $i => $c): ?>
     <div class="card" style="margin-bottom:16px">
       <div style="color:var(--muted);font-size:0.8rem;margin-bottom:8px">Question <?= (int)($i+1) ?></div>

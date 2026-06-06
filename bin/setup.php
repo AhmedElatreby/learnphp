@@ -36,7 +36,12 @@ $count = (int) $db->query('SELECT COUNT(*) FROM languages')->fetchColumn();
 if ($count === 0) {
     echo "Running seed...\n";
     $db->exec(file_get_contents(__DIR__ . '/../database/seed.sql'));
+    echo "Running extended seed (topics 6–28)...\n";
+    $db->exec(file_get_contents(__DIR__ . '/../database/seed_topics_6_28.sql'));
     echo "Done! Database ready at: " . ($_ENV['DB_PATH'] ?? 'database/app.sqlite') . "\n";
 } else {
-    echo "Database already seeded — skipping. Delete database/app.sqlite to reseed.\n";
+    // Apply the extended seed incrementally (INSERT OR IGNORE is safe to re-run)
+    echo "Applying extended seed (topics 6–28)...\n";
+    $db->exec(file_get_contents(__DIR__ . '/../database/seed_topics_6_28.sql'));
+    echo "Done.\n";
 }

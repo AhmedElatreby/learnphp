@@ -40,6 +40,7 @@ class ChallengeController
 
     public function submit(string $lang, string $topicSlug, string $id): void
     {
+        Auth::verifyCsrf();
         $challenge = Challenge::find((int)$id);
         $topic     = Topic::findBySlug($lang, $topicSlug);
         if (!$challenge || !$topic) { http_response_code(404); return; }
@@ -63,6 +64,7 @@ class ChallengeController
 
     public function submitFollowup(string $id): void
     {
+        Auth::verifyCsrf();
         $db = \App\Database::getInstance();
         $fu = $db->query('SELECT * FROM followup_challenges WHERE id = ?', [(int)$id])->fetch();
         if (!$fu) { http_response_code(404); return; }
@@ -106,6 +108,7 @@ HTML;
 
     public function sectionTestSubmit(string $lang, string $topicSlug): void
     {
+        Auth::verifyCsrf();
         $topic      = Topic::findBySlug($lang, $topicSlug);
         if (!$topic) { http_response_code(404); return; }
         $challenges = Challenge::sectionTest($topic['id']);
@@ -157,6 +160,7 @@ HTML;
         $exp  = htmlspecialchars($c['explanation']);
         $sol  = htmlspecialchars($c['solution']);
         $answerEsc = htmlspecialchars($answer);
+        $csrfToken = htmlspecialchars(Auth::csrfToken());
         $fu   = '';
         if (!empty($followups)) {
             $f   = $followups[0];
@@ -167,6 +171,7 @@ HTML;
   <h4 style="color:var(--warning);margin-bottom:8px">🔍 Quick Check — did you get it?</h4>
   <p style="margin-bottom:10px">{$fPrompt}</p>
   <form hx-post="/followup/{$fId}" hx-target="#followup-result" hx-swap="outerHTML">
+    <input type="hidden" name="_token" value="{$csrfToken}">
     <input type="text" name="answer" placeholder="Your answer..." autocomplete="off" style="margin-bottom:8px">
     <button type="submit" class="btn btn-primary">Check →</button>
   </form>

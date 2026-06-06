@@ -32,7 +32,7 @@
         </div>
         <div style="display:flex;gap:6px;align-items:center">
           <span class="badge badge-<?= htmlspecialchars($c['difficulty']) ?>"><?= ucfirst($c['difficulty']) ?></span>
-          <span class="badge" style="background:var(--bg);color:var(--muted);border:1px solid var(--border);font-size:0.72rem"><?= str_replace('_',' ',$c['type']) ?></span>
+          <span class="badge" style="background:var(--bg);color:var(--muted);border:1px solid var(--border);font-size:0.72rem"><?= htmlspecialchars(str_replace('_',' ',$c['type'])) ?></span>
         </div>
       </div>
     </a>

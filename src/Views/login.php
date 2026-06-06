@@ -7,6 +7,7 @@
   <?php endif; ?>
 
   <form method="POST" action="/login">
+    <input type="hidden" name="_token" value="<?= htmlspecialchars(\App\Auth::csrfToken()) ?>">
     <div class="form-group">
       <label>Email</label>
       <input type="email" name="email" required autofocus>

@@ -20,6 +20,7 @@ class AuthController
     public function login(): void
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
+        Auth::verifyCsrf();
         $email    = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
         $user     = Auth::attempt($email, $password);
@@ -52,6 +53,7 @@ class AuthController
     public function register(): void
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
+        Auth::verifyCsrf();
         $username = trim($_POST['username'] ?? '');
         $email    = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';

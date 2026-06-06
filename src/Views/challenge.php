@@ -8,7 +8,7 @@
     </span>
     <div style="display:flex;gap:8px">
       <span class="badge badge-<?= htmlspecialchars($challenge['difficulty']) ?>"><?= ucfirst($challenge['difficulty']) ?></span>
-      <span class="badge" style="background:var(--bg-card);color:var(--muted)"><?= ucfirst(str_replace('_',' ',$challenge['type'])) ?></span>
+      <span class="badge" style="background:var(--bg-card);color:var(--muted)"><?= htmlspecialchars(ucfirst(str_replace('_',' ',$challenge['type']))) ?></span>
     </div>
   </div>
 
@@ -26,6 +26,7 @@
         <form hx-post="/learn/php/<?= htmlspecialchars($topic['slug']) ?>/<?= (int)$challenge['id'] ?>"
               hx-target="#feedback"
               hx-swap="innerHTML">
+          <input type="hidden" name="_token" value="<?= htmlspecialchars(\App\Auth::csrfToken()) ?>">
           <div class="form-group">
             <label>Your answer:</label>
             <?php if ($challenge['type'] === 'write_code'): ?>
