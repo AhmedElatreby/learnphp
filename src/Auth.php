@@ -27,7 +27,7 @@ class Auth
             return null;
         }
         // Return only safe fields — never expose password_hash to callers
-        return ['id' => $row['id'], 'username' => $row['username'], 'email' => $row['email']];
+        return ['id' => $row['id'], 'username' => $row['username'], 'email' => $row['email'], 'is_admin' => (bool)$row['is_admin']];
     }
 
     public static function user(): ?array
@@ -41,7 +41,7 @@ class Auth
         if (session_status() === PHP_SESSION_NONE) session_start();
         session_regenerate_id(true);
         unset($_SESSION['csrf_token']); // rotate CSRF token on privilege escalation
-        $_SESSION['user'] = ['id' => $user['id'], 'username' => $user['username']];
+        $_SESSION['user'] = ['id' => $user['id'], 'username' => $user['username'], 'is_admin' => $user['is_admin'] ?? false];
     }
 
     public static function logout(): void
