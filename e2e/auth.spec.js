@@ -179,7 +179,7 @@ test.describe('Login flow', () => {
     await expect(page.locator('h1')).toContainText(u);
   });
 
-  test('nav shows username and logout link when logged in', async ({ page }) => {
+  test('nav shows username and logout link when logged in', async ({ page, isMobile }) => {
     await page.goto('/register');
     const u = `navuser${run}`;
     await page.fill('input[name="username"]', u);
@@ -187,9 +187,15 @@ test.describe('Login flow', () => {
     await page.fill('input[name="password"]', testUser.password);
     await page.click('button[type="submit"]');
     await expect(page).toHaveURL(/\/dashboard/);
-    await expect(page.locator('.nav a[href="/logout"]')).toBeVisible();
-    // Login/Sign Up links should be gone
-    await expect(page.locator('.nav a[href="/login"]')).toHaveCount(0);
+    if (isMobile) {
+      await page.locator('.nav__hamburger').click();
+      await expect(page.locator('#nav-overlay a[href="/logout"]')).toBeVisible();
+      await expect(page.locator('#nav-overlay a[href="/login"]')).toHaveCount(0);
+    } else {
+      await expect(page.locator('.nav a[href="/logout"]')).toBeVisible();
+      // Login/Sign Up links should be gone
+      await expect(page.locator('.nav a[href="/login"]')).toHaveCount(0);
+    }
   });
 });
 

@@ -51,9 +51,13 @@ $adminEmail    = $_ENV['ADMIN_EMAIL']    ?? getenv('ADMIN_EMAIL')    ?: null;
 $adminPassword = $_ENV['ADMIN_PASSWORD'] ?? getenv('ADMIN_PASSWORD') ?: null;
 if ($adminEmail && $adminPassword) {
     $hash = password_hash($adminPassword, PASSWORD_BCRYPT);
-    $db->prepare('INSERT OR IGNORE INTO users (username, email, password_hash, is_admin) VALUES (?, ?, ?, 1)')
-       ->execute(['admin', $adminEmail, $hash]);
-    $db->prepare('UPDATE users SET is_admin=1, password_hash=? WHERE email=?')
-       ->execute([$hash, $adminEmail]);
+    $db->query(
+        'INSERT OR IGNORE INTO users (username, email, password_hash, is_admin) VALUES (?, ?, ?, 1)',
+        ['admin', $adminEmail, $hash]
+    );
+    $db->query(
+        'UPDATE users SET is_admin=1, password_hash=? WHERE email=?',
+        [$hash, $adminEmail]
+    );
     echo "Admin user seeded: $adminEmail\n";
 }
