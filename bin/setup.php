@@ -45,3 +45,15 @@ if ($count === 0) {
     $db->exec(file_get_contents(__DIR__ . '/../database/seed_topics_6_28.sql'));
     echo "Done.\n";
 }
+
+// Seed admin user from env vars — safe to re-run on every deploy
+$adminEmail    = $_ENV['ADMIN_EMAIL']    ?? getenv('ADMIN_EMAIL')    ?: null;
+$adminPassword = $_ENV['ADMIN_PASSWORD'] ?? getenv('ADMIN_PASSWORD') ?: null;
+if ($adminEmail && $adminPassword) {
+    $hash = password_hash($adminPassword, PASSWORD_BCRYPT);
+    $db->prepare('INSERT OR IGNORE INTO users (username, email, password_hash, is_admin) VALUES (?, ?, ?, 1)')
+       ->execute(['admin', $adminEmail, $hash]);
+    $db->prepare('UPDATE users SET is_admin=1, password_hash=? WHERE email=?')
+       ->execute([$hash, $adminEmail]);
+    echo "Admin user seeded: $adminEmail\n";
+}
