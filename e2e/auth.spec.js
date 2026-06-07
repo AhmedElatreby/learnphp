@@ -81,10 +81,12 @@ test.describe('Register page', () => {
   });
 
   test('duplicate email shows error', async ({ page }) => {
-    const dupEmail = `dup${run}@example.com`;
+    // Use per-invocation unique values so concurrent desktop+mobile workers don't clash
+    const id = `${Date.now()}${Math.random().toString(36).slice(2, 6)}`;
+    const dupEmail = `dup${id}@example.com`;
     // Register once
     await page.goto('/register');
-    await page.fill('input[name="username"]', `dupuser${run}`);
+    await page.fill('input[name="username"]', `dupuser${id}`);
     await page.fill('input[name="email"]', dupEmail);
     await page.fill('input[name="password"]', 'password123');
     await page.click('button[type="submit"]');
@@ -93,7 +95,7 @@ test.describe('Register page', () => {
     // Logout and try same email again
     await page.goto('/logout');
     await page.goto('/register');
-    await page.fill('input[name="username"]', `dupuser2${run}`);
+    await page.fill('input[name="username"]', `dupuser2${id}`);
     await page.fill('input[name="email"]', dupEmail);
     await page.fill('input[name="password"]', 'password123');
     await page.click('button[type="submit"]');
@@ -219,7 +221,7 @@ test.describe('Logout flow', () => {
     await expect(page).toHaveURL(/\/login/);
   });
 
-  test('after logout, nav shows Login and Sign Up', async ({ page }) => {
+  test('after logout, nav shows Login and Sign Up', async ({ page, isMobile }) => {
     await page.goto('/register');
     await page.fill('input[name="username"]', `navout${run}`);
     await page.fill('input[name="email"]', `navout${run}@example.com`);
@@ -227,7 +229,13 @@ test.describe('Logout flow', () => {
     await page.click('button[type="submit"]');
     await page.goto('/logout');
 
-    await expect(page.locator('.nav a[href="/login"]')).toBeVisible();
-    await expect(page.locator('.nav a[href="/register"]')).toBeVisible();
+    if (isMobile) {
+      await page.locator('.nav__hamburger').click();
+      await expect(page.locator('#nav-overlay a[href="/login"]')).toBeVisible();
+      await expect(page.locator('#nav-overlay a[href="/register"]')).toBeVisible();
+    } else {
+      await expect(page.locator('.nav a[href="/login"]')).toBeVisible();
+      await expect(page.locator('.nav a[href="/register"]')).toBeVisible();
+    }
   });
 });
