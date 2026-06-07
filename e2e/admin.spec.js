@@ -110,7 +110,7 @@ test.describe('Admin challenge list', () => {
 
   test('challenges are grouped by topic with Edit and Delete buttons', async ({ page }) => {
     await loginAsAdmin(page);
-    await expect(page.locator('table')).toBeVisible();
+    await expect(page.locator('table').first()).toBeVisible();
     await expect(page.locator('a.btn[href*="/edit"]').first()).toBeVisible();
     await expect(page.locator('button.btn-danger').first()).toBeVisible();
   });
